@@ -3,7 +3,7 @@ name: lvsea-ppt
 description: "中文优先的终极 PPT 总调度 Skill：根据内容来源、受众、编辑性、交付格式和视觉风险，在原生可编辑 PPTX、SVG/HTML 到 PPTX、浏览器 HTML PPT、图片型 PPT、手绘技术页、Bento 单页、动画演示和配图资产路线之间选择最合适的专业执行器，保留事实与可继续编辑源文件，并完成结构、渲染、视觉和交互验收。Use when the user asks to 做PPT、制作演示文稿、生成可编辑PPTX、图片转PPTX、HTML转PPTX、SVG转PPTX、先做HTML再导出PPTX、做图片版PPT、网页PPT、Bento单页、PPT配图或统一派发多个PPT Skill。"
 metadata:
   author: "海洋哥 / lhylvsea"
-  version: "0.1.0"
+  version: "0.1.1"
   archetype: "vertical-presentation-router"
 ---
 

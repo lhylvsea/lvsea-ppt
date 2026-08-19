@@ -1,9 +1,9 @@
 {
   "ok": true,
   "status": "pass",
-  "reason": "root SKILL.md is 11190 bytes within production budget",
+  "reason": "root SKILL.md is 11547 bytes within production budget",
   "tier": "production",
-  "root_skill_bytes": 11190,
+  "root_skill_bytes": 11547,
   "root_budget_bytes": {
     "root_warn": 14000,
     "root_block": 20000
@@ -12,9 +12,9 @@
     "references": 15672,
     "scripts": 13401,
     "evals": 3092,
-    "reports": 23750
+    "reports": 25418
   },
-  "total_measured_bytes": 67105,
+  "total_measured_bytes": 69130,
   "files": [
     {
       "path": "references/license-boundaries.md",
@@ -58,12 +58,12 @@
     },
     {
       "path": "reports/context-budget.json",
-      "bytes": 1823,
+      "bytes": 2248,
       "on_demand": true
     },
     {
       "path": "reports/creation-handoff.md",
-      "bytes": 1186,
+      "bytes": 2289,
       "on_demand": true
     },
     {
@@ -73,7 +73,7 @@
     },
     {
       "path": "reports/output-quality-scorecard.md",
-      "bytes": 1130,
+      "bytes": 1272,
       "on_demand": true
     },
     {
@@ -83,7 +83,7 @@
     },
     {
       "path": "reports/skill-ir.json",
-      "bytes": 5697,
+      "bytes": 5695,
       "on_demand": true
     },
     {
