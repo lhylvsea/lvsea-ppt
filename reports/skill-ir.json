@@ -1,0 +1,148 @@
+{
+  "schema_version": "3.0.0-lvsea",
+  "generated_at": "2026-08-19",
+  "package": {
+    "name": "lvsea-ppt",
+    "version": "0.1.0",
+    "owner": "海洋哥 / lhylvsea",
+    "maturity_tier": "governed",
+    "lifecycle_stage": "library",
+    "upstream_inspiration": null
+  },
+  "intent": {
+    "description": "中文优先的终极 PPT 总调度 Skill：根据内容来源、受众、编辑性、交付格式和视觉风险，在原生可编辑 PPTX、SVG/HTML 到 PPTX、浏览器 HTML PPT、图片型 PPT、手绘技术页、Bento 单页、动画演示和配图资产路线之间选择最合适的专业执行器，保留事实与可继续编辑源文件，并完成结构、渲染、视觉和交互验收。Use when the user asks to 做PPT、制作演示文稿、生成可编辑PPTX、图片转PPTX、HTML转PPTX、SVG转PPTX、先做HTML再导出PPTX、做图片版PPT、网页PPT、Bento单页、PPT配图或统一派发多个PPT Skill。",
+    "job_to_be_done": "将多个 PPT、HTML、图片、SVG、动画和模板工作流统一派发到最合适的执行器，并以事实、编辑性、渲染和视觉质量门完成交付。",
+    "target_users": [
+      "海洋哥及其本地 Codex 工作流",
+      "制造企业管理者",
+      "需要跨格式 PPT 产出的 Agent 使用者"
+    ],
+    "inputs": [
+      "topic",
+      "markdown",
+      "docx",
+      "pdf",
+      "xlsx",
+      "url",
+      "pptx",
+      "png/jpg",
+      "html",
+      "svg",
+      "codebase",
+      "mixed source"
+    ],
+    "outputs": [
+      "editable pptx",
+      "html deck",
+      "image deck",
+      "bento html",
+      "svg/png assets",
+      "source project",
+      "qa evidence"
+    ],
+    "exclusions": [
+      "one-off summary",
+      "translation only",
+      "unverified provider claims",
+      "bundling upstream proprietary templates or private assets"
+    ]
+  },
+  "triggers": {
+    "should_trigger": [
+      "把这份产品介绍做成高密度、可编辑的PPTX",
+      "用公司现有PPT模板填入新的安全生产内容，保留排版",
+      "把这组PPT截图转成可编辑PPTX，文字要能继续修改",
+      "把这个HTML和SVG设计稿转成可编辑PowerPoint",
+      "先用open-slide做HTML持续调整，满意后用baoyu做视觉终版",
+      "把这篇公众号文章做成一页高密度Bento PPT",
+      "把战略报告按SCR逻辑做成有证据链的咨询风PPTX",
+      "做一个带演讲者视图和讲稿备注的Swiss风网页PPT",
+      "给PPT封面和章节页生成留安全区的配图提示词",
+      "做一个动画HTML流程演示，后面用于录屏"
+    ],
+    "should_not_trigger": [
+      "只解释一下PPT和PPTX的区别，不要创建文件",
+      "把这段PPT说明翻译成英文，不要执行工具",
+      "只给我三个PPT主题方向，不要生成计划或文件",
+      "只查看这张幻灯片截图，不要修改也不要转换"
+    ],
+    "near_neighbor": [
+      "帮我开发一个复杂的React白板编辑器",
+      "只把这份报告排版成一页Word，顺便放一张流程图",
+      "帮我做一个网站首页，不是演示文稿"
+    ],
+    "adversarial": [
+      "只给我一个PPTX文件名，不要制作内容",
+      "只审阅这份PPTX的许可证，不要生成或修改演示文稿"
+    ]
+  },
+  "workflow": {
+    "router_rules": [],
+    "core_workflow": [],
+    "modes_and_gates": [],
+    "output_contract": [],
+    "failure_modes": []
+  },
+  "resources": {
+    "references": [
+      "references/license-boundaries.md",
+      "references/provider-matrix.md",
+      "references/qa-contract.md",
+      "references/route-playbook.md",
+      "references/source-to-output.md"
+    ],
+    "scripts": [
+      "scripts/route_request.py",
+      "scripts/validate_route.py"
+    ],
+    "evals": [
+      "evals/trigger_cases.json"
+    ],
+    "reports": [
+      "reports/context-budget.json",
+      "reports/creation-handoff.md",
+      "reports/output-evidence.json",
+      "reports/output-quality-scorecard.md",
+      "reports/prior-art-research.md",
+      "reports/skill-ir.json",
+      "reports/synthesis-ledger.md",
+      "reports/trigger-eval.json"
+    ],
+    "schemas": []
+  },
+  "risk": {
+    "output_risk": "high",
+    "execution_risk": "high",
+    "trust_boundary": "external-provider-dependent",
+    "permissions": {
+      "network": "read-only prior-art and source retrieval by default; GitHub publication only after explicit user request",
+      "file_write": "project artifacts, reports, and requested local Skill install",
+      "subprocess": "route probes and provider-owned validation only; no unreviewed third-party execution",
+      "secrets": "never read into public artifacts or reports"
+    }
+  },
+  "governance": {
+    "owner": "海洋哥 / lhylvsea",
+    "maturity": "governed",
+    "lifecycle_stage": "library",
+    "review_cadence": "quarterly",
+    "review_due": "2026-11-19",
+    "rollback_boundary": "feature branch and immutable semver release; local sync is recoverable"
+  },
+  "portability": {
+    "canonical_format": "agent-skills",
+    "adapter_targets": [],
+    "activation": {},
+    "execution": {},
+    "trust": {},
+    "permissions": {},
+    "degradation": {}
+  },
+  "evidence_boundary": {
+    "local_validation_is_evidence": true,
+    "trigger_fixture_is_evidence": true,
+    "provider_or_human_output_evidence": false,
+    "missing_external_or_human_evidence_label": "missing evidence",
+    "public_claim_policy": "claim only what named package, trigger, runtime, install, provider, or human evidence supports"
+  }
+}

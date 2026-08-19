@@ -1,0 +1,56 @@
+{
+  "name": "lvsea-ppt",
+  "version": "0.1.0",
+  "owner": "海洋哥 / lhylvsea",
+  "updated_at": "2026-08-19",
+  "review_due": "2026-11-19",
+  "status": "active",
+  "maturity_tier": "governed",
+  "lifecycle_stage": "library",
+  "context_budget_tier": "production",
+  "skill_archetype": "vertical-presentation-router",
+  "review_cadence": "quarterly",
+  "intent": {
+    "job_to_be_done": "将多个 PPT、HTML、图片、SVG、动画和模板工作流统一派发到最合适的执行器，并以事实、编辑性、渲染和视觉质量门完成交付。",
+    "target_users": ["海洋哥及其本地 Codex 工作流", "制造企业管理者", "需要跨格式 PPT 产出的 Agent 使用者"],
+    "inputs": ["topic", "markdown", "docx", "pdf", "xlsx", "url", "pptx", "png/jpg", "html", "svg", "codebase", "mixed source"],
+    "outputs": ["editable pptx", "html deck", "image deck", "bento html", "svg/png assets", "source project", "qa evidence"],
+    "exclusions": ["one-off summary", "translation only", "unverified provider claims", "bundling upstream proprietary templates or private assets"]
+  },
+  "risk": {
+    "output_risk": "high",
+    "execution_risk": "high",
+    "trust_boundary": "external-provider-dependent"
+  },
+  "permissions": {
+    "network": "read-only prior-art and source retrieval by default; GitHub publication only after explicit user request",
+    "file_write": "project artifacts, reports, and requested local Skill install",
+    "subprocess": "route probes and provider-owned validation only; no unreviewed third-party execution",
+    "secrets": "never read into public artifacts or reports"
+  },
+  "target_platforms": ["openai", "claude", "generic", "agent-skills-compatible", "vscode"],
+  "factory_components": ["references", "scripts", "evals", "reports", "tests"],
+  "release_gates": [
+    "intent_capture",
+    "prior_art_research",
+    "keep_adapt_reject_invent_ledger",
+    "provider_and_license_boundary",
+    "root_entrypoint_isolation",
+    "trigger_regression",
+    "route_regression",
+    "context_budget",
+    "skill_ir",
+    "secret_scan",
+    "evidence_bound_public_claims",
+    "feature_branch_only_publication",
+    "pull_request_review_and_check_gate",
+    "released_version_immutability",
+    "github_release_creation",
+    "npx_discovery_and_clean_install"
+  ],
+  "research_snapshot": {
+    "reviewed_at": "2026-08-19",
+    "source_report": "reports/prior-art-research.md",
+    "policy": "semantic adoption; do not mirror upstream wholesale"
+  }
+}

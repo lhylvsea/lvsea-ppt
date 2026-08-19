@@ -1,0 +1,10 @@
+__pycache__/
+*.py[cod]
+.DS_Store
+Thumbs.db
+
+# Local provider output and credentials must stay outside the Skill package.
+outputs/
+.env
+*.key
+*.pem

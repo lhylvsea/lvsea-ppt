@@ -1,0 +1,12 @@
+{
+  "status": "missing_evidence",
+  "provider_runs": [],
+  "human_blind_review": false,
+  "note": "This package is a router and governance layer. Provider-backed PPTX, HTML, and raster visual output was not generated during package authoring.",
+  "next_evidence": [
+    "run one native editable PPTX case through ppt-master or CyberPPT",
+    "run one HTML browser iteration case",
+    "run one image-first plus image-to-editable case",
+    "record actual renderer and visual review results without changing the package claims"
+  ]
+}

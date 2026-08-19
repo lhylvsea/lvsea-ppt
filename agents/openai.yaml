@@ -1,0 +1,14 @@
+interface:
+  display_name: "Lvsea PPT Boss"
+  short_description: "Route and validate Chinese-first editable presentations"
+  default_prompt: "Use $lvsea-ppt as the single presentation routing authority. Identify source, audience, target format, editability, and iteration needs; choose one primary provider plus only necessary collaborators; preserve facts and editable source files; validate structure, rendering, visual quality, and actual provider status."
+examples:
+  - "把这份制造运营材料做成高密度、可编辑 PPTX"
+  - "先用 open-slide 做 HTML，再用图片路线做视觉终版"
+  - "把 PPT 截图转成可编辑 PPTX"
+  - "把 HTML/SVG 设计稿转成 PPTX并检查降级边界"
+  - "把公众号文章做成一页 Bento PPT"
+policy:
+  allow_implicit_invocation: true
+  source_tier: "local-or-user-authorized-provider"
+  unreviewed_remote_execution: false

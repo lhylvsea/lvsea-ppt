@@ -1,0 +1,101 @@
+{
+  "ok": true,
+  "status": "pass",
+  "reason": "root SKILL.md is 11190 bytes within production budget",
+  "tier": "production",
+  "root_skill_bytes": 11190,
+  "root_budget_bytes": {
+    "root_warn": 14000,
+    "root_block": 20000
+  },
+  "resource_bytes": {
+    "references": 15672,
+    "scripts": 13401,
+    "evals": 3092,
+    "reports": 23750
+  },
+  "total_measured_bytes": 67105,
+  "files": [
+    {
+      "path": "references/license-boundaries.md",
+      "bytes": 1307,
+      "on_demand": true
+    },
+    {
+      "path": "references/provider-matrix.md",
+      "bytes": 5731,
+      "on_demand": true
+    },
+    {
+      "path": "references/qa-contract.md",
+      "bytes": 2141,
+      "on_demand": true
+    },
+    {
+      "path": "references/route-playbook.md",
+      "bytes": 4540,
+      "on_demand": true
+    },
+    {
+      "path": "references/source-to-output.md",
+      "bytes": 1953,
+      "on_demand": true
+    },
+    {
+      "path": "scripts/route_request.py",
+      "bytes": 11384,
+      "on_demand": false
+    },
+    {
+      "path": "scripts/validate_route.py",
+      "bytes": 2017,
+      "on_demand": false
+    },
+    {
+      "path": "evals/trigger_cases.json",
+      "bytes": 3092,
+      "on_demand": false
+    },
+    {
+      "path": "reports/context-budget.json",
+      "bytes": 1823,
+      "on_demand": true
+    },
+    {
+      "path": "reports/creation-handoff.md",
+      "bytes": 1186,
+      "on_demand": true
+    },
+    {
+      "path": "reports/output-evidence.json",
+      "bytes": 533,
+      "on_demand": true
+    },
+    {
+      "path": "reports/output-quality-scorecard.md",
+      "bytes": 1130,
+      "on_demand": true
+    },
+    {
+      "path": "reports/prior-art-research.md",
+      "bytes": 2755,
+      "on_demand": true
+    },
+    {
+      "path": "reports/skill-ir.json",
+      "bytes": 5697,
+      "on_demand": true
+    },
+    {
+      "path": "reports/synthesis-ledger.md",
+      "bytes": 2704,
+      "on_demand": true
+    },
+    {
+      "path": "reports/trigger-eval.json",
+      "bytes": 7922,
+      "on_demand": true
+    }
+  ],
+  "missing_evidence": "context size does not prove output quality or runtime performance"
+}
