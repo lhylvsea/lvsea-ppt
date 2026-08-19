@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.1.1 - 2026-08-19
+
+- Refreshed the generated Skill IR, trigger evaluation and context-budget evidence after the final discovery-contract update.
+- Corrected the documented root context measurement to `11,547` bytes; no routing behavior was changed.
+
 ## 0.1.0 - 2026-08-19
 
 - Added `lvsea-ppt`, a Chinese-first presentation routing and governance Skill.
