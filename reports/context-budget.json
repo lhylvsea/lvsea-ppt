@@ -1,20 +1,20 @@
 {
   "ok": true,
   "status": "pass",
-  "reason": "root SKILL.md is 11547 bytes within production budget",
+  "reason": "root SKILL.md is 13993 bytes within production budget",
   "tier": "production",
-  "root_skill_bytes": 11547,
+  "root_skill_bytes": 13993,
   "root_budget_bytes": {
     "root_warn": 14000,
     "root_block": 20000
   },
   "resource_bytes": {
-    "references": 15672,
-    "scripts": 13401,
-    "evals": 3092,
-    "reports": 25418
+    "references": 18873,
+    "scripts": 27741,
+    "evals": 3340,
+    "reports": 25810
   },
-  "total_measured_bytes": 69130,
+  "total_measured_bytes": 89757,
   "files": [
     {
       "path": "references/license-boundaries.md",
@@ -28,12 +28,12 @@
     },
     {
       "path": "references/qa-contract.md",
-      "bytes": 2141,
+      "bytes": 2802,
       "on_demand": true
     },
     {
       "path": "references/route-playbook.md",
-      "bytes": 4540,
+      "bytes": 7080,
       "on_demand": true
     },
     {
@@ -43,17 +43,17 @@
     },
     {
       "path": "scripts/route_request.py",
-      "bytes": 11384,
+      "bytes": 25268,
       "on_demand": false
     },
     {
       "path": "scripts/validate_route.py",
-      "bytes": 2017,
+      "bytes": 2473,
       "on_demand": false
     },
     {
       "path": "evals/trigger_cases.json",
-      "bytes": 3092,
+      "bytes": 3340,
       "on_demand": false
     },
     {
@@ -63,7 +63,7 @@
     },
     {
       "path": "reports/creation-handoff.md",
-      "bytes": 2289,
+      "bytes": 2331,
       "on_demand": true
     },
     {
@@ -73,7 +73,7 @@
     },
     {
       "path": "reports/output-quality-scorecard.md",
-      "bytes": 1272,
+      "bytes": 1550,
       "on_demand": true
     },
     {
@@ -83,7 +83,7 @@
     },
     {
       "path": "reports/skill-ir.json",
-      "bytes": 5695,
+      "bytes": 5767,
       "on_demand": true
     },
     {

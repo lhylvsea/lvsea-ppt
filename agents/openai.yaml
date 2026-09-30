@@ -8,6 +8,8 @@ examples:
   - "把 PPT 截图转成可编辑 PPTX"
   - "把 HTML/SVG 设计稿转成 PPTX并检查降级边界"
   - "把公众号文章做成一页 Bento PPT"
+  - "做一张流程图"
+  - "做一张手绘式中文技术流程图，输出图片型 PPTX"
 policy:
   allow_implicit_invocation: true
   source_tier: "local-or-user-authorized-provider"

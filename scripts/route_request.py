@@ -89,11 +89,156 @@ def _explicit_provider(text: str) -> str | None:
         ("qiaomu-ppt", ["qiaomu-ppt"]),
         ("qiaomu-bento-ppt", ["qiaomu-bento-ppt"]),
         ("gaiduo-ppt", ["gaiduo-ppt"]),
+        ("ian-handdrawn-ppt", ["ian-handdrawn-ppt", "handdrawn"]),
     ]
     for provider, terms in pairs:
         if _has(text, *terms):
             return provider
     return None
+
+
+def _explicit_diagram_choice(text: str) -> str | None:
+    choices = [
+        ("technical-native", ["technical-native", "中文技术解释图", "技术解释图"]),
+        ("handdrawn", ["handdrawn", "手绘式", "手绘流程图"]),
+        ("illustrated", ["illustrated", "文字配图", "插画式", "插图式"]),
+        ("editable-vector", ["editable-vector", "原生可编辑矢量图", "可编辑矢量"]),
+        ("interactive-web", ["interactive-web", "html动画交互图", "html交互图"]),
+        ("bento", ["bento", "一页bento", "一页 bento"]),
+        ("evidence-consulting", ["evidence-consulting", "咨询/证据链图", "证据链图"]),
+    ]
+    for choice, terms in choices:
+        if _has(text, *terms):
+            return choice
+    return None
+
+
+DIAGRAM_TERMS = (
+    "流程图",
+    "行程图",
+    "路线图",
+    "架构图",
+    "关系图",
+    "组织图",
+    "示意图",
+    "逻辑图",
+    "信息图",
+    "技术图",
+    "工艺图",
+    "系统图",
+    "拓扑图",
+    "结构图",
+    "路径图",
+    "旅程图",
+    "图解",
+    "图示",
+)
+
+
+def _diagram_clarification(
+    text: str,
+    *,
+    has_diagram: bool,
+    has_style_signal: bool,
+    has_purpose_signal: bool,
+    bypass: bool,
+) -> dict[str, Any] | None:
+    """Return a user-choice gate for broad diagram requests.
+
+    The router must not silently choose between native technical diagrams,
+    raster illustration, hand-drawn pages, and interactive HTML when the user
+    only says "make a diagram". Explicit style/format signals or a direct
+    "you decide" instruction can bypass the gate.
+    """
+    semantic_ambiguous = _has(text, "行程图", "路线图", "旅程图") and not has_purpose_signal
+    if not has_diagram or bypass or (has_style_signal and not semantic_ambiguous):
+        return None
+
+    questions: list[dict[str, Any]] = []
+    if semantic_ambiguous:
+        questions.append(
+            {
+                "id": "diagram_purpose",
+                "question": "你说的“行程图/路线图”具体是哪一类？",
+                "choices": [
+                    {"id": "travel-itinerary", "label": "旅行/日程路线", "description": "景点、时间、交通、酒店或任务安排。"},
+                    {"id": "process-flow", "label": "工艺/业务流程", "description": "步骤、责任、输入输出、制度或操作路径。"},
+                    {"id": "system-architecture", "label": "系统/技术架构", "description": "模块、设备、数据、接口或系统关系。"},
+                    {"id": "strategy-roadmap", "label": "战略/项目路线", "description": "阶段、目标、里程碑、策略或行动计划。"},
+                    {"id": "other", "label": "其他", "description": "请补充一句图的用途和阅读对象。"},
+                ],
+            }
+        )
+
+    if not has_style_signal:
+        questions.append(
+            {
+                "id": "diagram_style",
+                "question": "希望采用哪种表现路线？",
+                "choices": [
+                    {
+                        "id": "technical-native",
+                        "label": "中文技术解释图",
+                        "description": "原生文字、形状、箭头和分层关系，适合工艺、设备、系统和培训说明；优先可编辑 PPTX。",
+                        "route": "native-create",
+                        "providers": ["ppt-master", "cyber-ppt", "qiaomu-ppt"],
+                    },
+                    {
+                        "id": "handdrawn",
+                        "label": "手绘式",
+                        "description": "手绘线稿、知识卡或草图感；优先视觉成品，必要时再做可编辑重建。",
+                        "route": "image-first-visual",
+                        "providers": ["ian-handdrawn-ppt", "ppt-image-first"],
+                    },
+                    {
+                        "id": "illustrated",
+                        "label": "文字配图/插画式",
+                        "description": "文字与场景图、插画或概念图结合；视觉冲击优先，复杂画面通常是图片层。",
+                        "route": "image-first-visual",
+                        "providers": ["baoyu-slide-deck", "ppt-image-first"],
+                    },
+                    {
+                        "id": "editable-vector",
+                        "label": "原生可编辑矢量图",
+                        "description": "文本、矩形、路径、箭头和分组尽量成为 PPT 原生对象或局部 SVG。",
+                        "route": "structured-import",
+                        "providers": ["ppt-master", "bggg-creator-image2ppt", "qiaomu-ppt"],
+                    },
+                    {
+                        "id": "interactive-web",
+                        "label": "HTML/动画交互图",
+                        "description": "浏览器预览、动画、演讲者视图、缩放或录屏优先。",
+                        "route": "html-first-iterate",
+                        "providers": ["open-slide", "PPT-as-code", "guizang-ppt-skill"],
+                    },
+                    {
+                        "id": "bento",
+                        "label": "一页 Bento 信息图",
+                        "description": "高密度、一页式、适合文章、URL、公众号或管理摘要。",
+                        "route": "bento-onepage",
+                        "providers": ["bentohttp-ppt", "qiaomu-bento-ppt"],
+                    },
+                    {
+                        "id": "evidence-consulting",
+                        "label": "咨询/证据链图",
+                        "description": "SCR、战略、经营、安全或制造分析，先建立证据台账和逻辑关系。",
+                        "route": "evidence-consulting",
+                        "providers": ["cyber-ppt", "ppt-master"],
+                    },
+                ],
+            }
+        )
+    return {
+        "route": "clarification-required",
+        "status": "needs-user-choice",
+        "reason": "“图/流程图/行程图/路线图”覆盖多种输出契约；在用途、表现方式或编辑边界未明确前，不直接替用户选择。",
+        "clarification": {
+            "questions": questions,
+            "recommended_choice": "technical-native",
+            "recommended_reason": "在制造、工艺、设备、安全和管理场景中，它最容易保留事实、中文说明和后续编辑能力。",
+            "resume_prompt": "可直接回复：`中文技术解释图 + 可编辑PPTX`，或 `手绘式 + 图片型PPT`。若你说“你来定/直接做”，将采用推荐路线。",
+        },
+    }
 
 
 def choose_route(request: str, extra_roots: list[str] | None = None) -> dict[str, Any]:
@@ -103,6 +248,7 @@ def choose_route(request: str, extra_roots: list[str] | None = None) -> dict[str
     availability = {name: _find_provider(name, roots) for name in PROVIDERS}
 
     explicit = _explicit_provider(text)
+    selected_choice = _explicit_diagram_choice(text)
     has_editable = _has(text, "可编辑", "编辑", "pptx", "powerpoint", "真文本", "native")
     has_image = _has(text, "图片", "截图", "海报", "image", "png", "jpg", "视觉稿")
     has_html = _has(text, "html", "网页", "浏览器", "react", "webgl", "网页ppt")
@@ -115,8 +261,155 @@ def choose_route(request: str, extra_roots: list[str] | None = None) -> dict[str
     has_motion = _has(text, "动画html", "动画网页", "录屏", "动态流程", "motion", "动画演示")
     has_presenter = _has(text, "演讲者视图", "讲稿备注", "杂志风", "swiss", "发布会", "演讲")
     wants_hybrid = _has(text, "先用 open-slide", "先用open-slide", "再用 baoyu", "再用baoyu", "html再", "html ->", "html到图片")
+    has_diagram = _has(text, *DIAGRAM_TERMS)
+    has_style_signal = _has(
+        text,
+        "手绘",
+        "handdrawn",
+        "草图",
+        "技术解释",
+        "中文技术",
+        "工艺",
+        "设备",
+        "系统架构",
+        "架构",
+        "文字配图",
+        "图文",
+        "插画",
+        "插图",
+        "配图式",
+        "图片型",
+        "图片版",
+        "视觉冲击",
+        "image-first",
+        "可编辑",
+        "pptx",
+        "powerpoint",
+        "svg",
+        "html",
+        "react",
+        "浏览器",
+        "动画",
+        "交互",
+        "bento",
+        "一页",
+        "scr",
+        "证据链",
+        "咨询风",
+        "战略",
+    )
+    has_purpose_signal = _has(
+        text,
+        "旅行",
+        "旅游",
+        "景点",
+        "酒店",
+        "日程",
+        "交通",
+        "工艺",
+        "设备",
+        "系统",
+        "业务",
+        "生产",
+        "安全",
+        "技术",
+        "战略",
+        "项目",
+        "经营",
+        "制造",
+        "培训",
+    )
+    bypass_diagram_gate = _has(text, "你来定", "直接做", "直接生成", "不用确认", "无需确认", "按默认")
 
-    if explicit == "GordenImage2PPTX" or (has_image and has_editable and _has(text, "转", "还原", "逆向", "图片ppt")):
+    clarification = _diagram_clarification(
+        text,
+        has_diagram=has_diagram,
+        has_style_signal=has_style_signal or explicit is not None or selected_choice is not None,
+        has_purpose_signal=has_purpose_signal,
+        bypass=bypass_diagram_gate,
+    )
+    if clarification:
+        return {
+            "request": original,
+            "route": clarification["route"],
+            "reason": clarification["reason"],
+            "primary_candidates": [],
+            "primary_provider": None,
+            "collaborator_candidates": [],
+            "collaborators": [],
+            "provider_status": {},
+            "clarification": clarification["clarification"],
+            "assumptions": {
+                "language": "zh-CN",
+                "canvas": "16:9",
+                "editable_default": True,
+                "minimum_body_size": "12pt for PPTX, 16px for HTML",
+                "diagram_gate": "paused-before-provider-selection",
+            },
+            "status": clarification["status"],
+        }
+
+    if selected_choice == "technical-native":
+        route = "native-create"
+        candidates = ["ppt-master", "cyber-ppt", "qiaomu-ppt"]
+        collaborators = []
+        reason = "用户已选择中文技术解释图，优先使用原生文字、形状、箭头和分层关系。"
+    elif selected_choice == "handdrawn":
+        route = "image-first-visual"
+        candidates = ["ian-handdrawn-ppt", "ppt-image-first", "baoyu-slide-deck"]
+        collaborators = ["GordenImage2PPTX", "bggg-creator-image2ppt"] if has_editable else []
+        reason = "用户已选择手绘式表达，先保证手绘视觉叙事，再按需重建可编辑对象。"
+    elif selected_choice == "illustrated":
+        route = "image-first-visual"
+        candidates = ["baoyu-slide-deck", "ppt-image-first", "ian-handdrawn-ppt"]
+        collaborators = ["GordenImage2PPTX", "bggg-creator-image2ppt"] if has_editable else []
+        reason = "用户已选择文字配图/插画式表达，视觉构图优先，复杂画面保留为图片组件。"
+    elif selected_choice == "editable-vector":
+        route = "structured-import"
+        candidates = ["ppt-master", "bggg-creator-image2ppt", "qiaomu-ppt"]
+        collaborators = []
+        reason = "用户已选择原生可编辑矢量图，优先将文字、路径、箭头和分组映射为可编辑对象。"
+    elif selected_choice == "interactive-web":
+        route = "html-first-iterate"
+        candidates = ["open-slide", "PPT-as-code", "guizang-ppt-skill", "dashiai-ppt"]
+        collaborators = []
+        reason = "用户已选择 HTML/动画交互图，优先交付浏览器可运行源和交互预览。"
+    elif selected_choice == "bento":
+        route = "bento-onepage"
+        candidates = ["bentohttp-ppt", "qiaomu-bento-ppt", "dashiai-ppt"]
+        collaborators = []
+        reason = "用户已选择一页 Bento 信息图，优先高密度布局和离线可编辑 HTML。"
+    elif selected_choice == "evidence-consulting":
+        route = "evidence-consulting"
+        candidates = ["cyber-ppt", "ppt-master", "qiaomu-ppt"]
+        collaborators = []
+        reason = "用户已选择咨询/证据链图，先建立事实台账、故事线和严格质量门。"
+    elif explicit in {"open-slide", "PPT-as-code", "dashiai-ppt", "html-ppt-skill", "gaiduo-ppt"} and not wants_hybrid:
+        route = "html-first-iterate"
+        candidates = [explicit, "open-slide", "PPT-as-code", "dashiai-ppt"]
+        collaborators = []
+        reason = f"用户明确指定 `{explicit}`，按其 HTML/浏览器迭代能力执行。"
+    elif explicit == "guizang-ppt-skill":
+        route = "html-presenter"
+        candidates = ["guizang-ppt-skill", "PPT-as-code", "open-slide"]
+        collaborators = []
+        reason = "用户明确指定 Guizang 网页演示路线，优先保留演讲者视图和演示交互。"
+    elif explicit in {"baoyu-slide-deck", "ppt-image-first", "ian-handdrawn-ppt"}:
+        route = "image-first-visual"
+        candidates = [explicit, "baoyu-slide-deck", "ppt-image-first", "ian-handdrawn-ppt"]
+        collaborators = ["GordenImage2PPTX", "bggg-creator-image2ppt"] if has_editable else []
+        reason = f"用户明确指定 `{explicit}`，按图片优先路线执行，并单独记录可编辑性边界。"
+    elif explicit == "qiaomu-bento-ppt":
+        route = "bento-onepage"
+        candidates = ["qiaomu-bento-ppt", "bentohttp-ppt", "dashiai-ppt"]
+        collaborators = []
+        reason = "用户明确指定 Qiaomu Bento 路线，优先输出离线高密度 HTML 信息图。"
+    elif explicit == "qiaomu-ppt":
+        route = "native-create"
+        candidates = ["qiaomu-ppt", "ppt-master", "cyber-ppt"]
+        collaborators = []
+        reason = "用户明确指定 Qiaomu PPT 路线，优先保留来源台账和可编辑结构。"
+    elif explicit == "GordenImage2PPTX" or (has_image and has_editable and _has(text, "转", "还原", "逆向", "图片ppt")):
         route = "image-to-editable"
         candidates = ["GordenImage2PPTX", "bggg-creator-image2ppt", "ppt-master"]
         collaborators = ["ppt-master"]
@@ -146,6 +439,11 @@ def choose_route(request: str, extra_roots: list[str] | None = None) -> dict[str
         candidates = ["bentohttp-ppt", "qiaomu-bento-ppt", "dashiai-ppt"]
         collaborators = []
         reason = "内容是一页高密度文章/URL/Bento 信息页。"
+    elif has_diagram and _has(text, "文字配图", "图文", "配图式", "插画式", "插图式"):
+        route = "image-first-visual"
+        candidates = ["baoyu-slide-deck", "ppt-image-first", "ian-handdrawn-ppt"]
+        collaborators = ["GordenImage2PPTX", "bggg-creator-image2ppt"] if has_editable else []
+        reason = "已明确采用文字配图/插画式表达，视觉构图优先，复杂画面保留为图片组件。"
     elif has_visual_asset and not _has(text, "做一份ppt", "做ppt", "制作ppt", "生成pptx"):
         route = "visual-asset"
         candidates = ["ppt-design-prompt"]
@@ -212,6 +510,15 @@ def main() -> None:
         print(f"primary={result['primary_provider']}")
         print(f"status={result['status']}")
         print(f"reason={result['reason']}")
+        if result.get("status") == "needs-user-choice":
+            clarification = result.get("clarification", {})
+            for question in clarification.get("questions", []):
+                print(f"{question['id']}: {question['question']}")
+                for choice in question.get("choices", []):
+                    route = f" -> {choice['route']}" if choice.get("route") else ""
+                    print(f"  {choice['id']}: {choice['label']}{route} | {choice['description']}")
+            print(f"recommended={clarification.get('recommended_choice')}")
+            print(f"resume={clarification.get('resume_prompt')}")
 
 
 if __name__ == "__main__":

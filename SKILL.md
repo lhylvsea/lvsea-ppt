@@ -1,9 +1,9 @@
 ---
 name: lvsea-ppt
-description: "中文优先的终极 PPT 总调度 Skill：根据内容来源、受众、编辑性、交付格式和视觉风险，在原生可编辑 PPTX、SVG/HTML 到 PPTX、浏览器 HTML PPT、图片型 PPT、手绘技术页、Bento 单页、动画演示和配图资产路线之间选择最合适的专业执行器，保留事实与可继续编辑源文件，并完成结构、渲染、视觉和交互验收。Use when the user asks to 做PPT、制作演示文稿、生成可编辑PPTX、图片转PPTX、HTML转PPTX、SVG转PPTX、先做HTML再导出PPTX、做图片版PPT、网页PPT、Bento单页、PPT配图或统一派发多个PPT Skill。"
+description: "中文优先的终极 PPT 总调度 Skill：根据内容来源、受众、编辑性、交付格式和视觉风险，在原生可编辑 PPTX、SVG/HTML 到 PPTX、浏览器 HTML PPT、图片型 PPT、手绘技术页、Bento 单页、动画演示和配图资产路线之间选择最合适的专业执行器，保留事实与可继续编辑源文件，并完成结构、渲染、视觉和交互验收。Use when the user asks to 做PPT、制作演示文稿、生成可编辑PPTX、图片转PPTX、HTML转PPTX、SVG转PPTX、先做HTML再导出PPTX、做图片版PPT、网页PPT、Bento单页、PPT配图、流程图、行程图、路线图、架构图、关系图、示意图或统一派发多个PPT Skill。"
 metadata:
   author: "海洋哥 / lhylvsea"
-  version: "0.1.1"
+  version: "0.1.2"
   archetype: "vertical-presentation-router"
 ---
 
@@ -38,7 +38,7 @@ metadata:
 5. 受众与风险：制造运营、生产安全、党建党政、经营分析、研究、课程、发布会或创意展示。
 6. 迭代方式：一次交付、先看提纲、先看风格预览、先在 HTML 中持续调整，还是按页面逐页确认。
 
-只有来源、目标格式或编辑边界会改变路由时才问一个聚焦问题。用户说“你来定”“直接做”“不用确认”时，按默认路线自动决策，但在进度中列出关键假设。
+仅在来源、格式或编辑边界改变路由时追问。图/流程图/行程图/路线图/架构图/关系图/示意图若未说明用途或表现方式，先进入 `clarification-required`，列出选项，不擅自猜风格。用户说“你来定”“直接做”“不用确认”时跳过闸门，按默认路线决策并列出关键假设。
 
 ## 3. 路由总表
 
@@ -46,6 +46,7 @@ metadata:
 
 | 路由 | 典型请求 | 首选执行器 | 主要交付 |
 | --- | --- | --- | --- |
+| `clarification-required` | 图/流程图/行程图等描述宽泛，未说明用途或表现方式 | 不选 provider，先向用户列出选项 | 语义问题、风格选项、推荐路线、继续执行提示 |
 | `native-create` | 从材料或主题生成严肃、可编辑 PPTX | `$ppt-master`；高风险时 `$cyber-ppt` | PPTX、项目源、SVG/预览、QA |
 | `native-template-fill` | 套用现有 PPTX/公司模板、保持排版只换内容 | `$ppt-master` Fill Native；`$GordenPPTSkill` | 新 PPTX、填充计划、回读与渲染 |
 | `native-enhance` | 保留现有 PPTX 页面，增加备注、动画、旁白或局部增强 | `$ppt-master` Enhance Native | 新 PPTX、变更清单、回归预览 |
@@ -61,6 +62,22 @@ metadata:
 | `motion-html` | 动画 HTML、流程演示、录屏配套、动态 Web 视觉 | `$AI_Animation` / `$frontend-slides` | 可运行 HTML、静态降级、动效检查 |
 
 优先级：用户明确格式/工具 > 输入形态 > 编辑性 > 受众与风险 > 迭代方式 > 默认偏好。不要同时调用所有执行器。
+
+### 图形请求的歧义闸门
+
+当请求只说“做一张流程图/行程图/关系图/示意图”，但没有说明图的用途、阅读对象、视觉风格、交付格式或编辑边界时，先发出选择题，不直接生成。机器路由器返回 `status=needs-user-choice`，并提供两个问题：
+
+1. 语义范围：旅行/日程路线、工艺/业务流程、系统/技术架构、战略/项目路线或其他。
+2. 表现路线：
+   - `technical-native`：中文技术解释图，原生文字/形状/箭头，优先可编辑 PPTX；`ppt-master`、`cyber-ppt`、`qiaomu-ppt`。
+   - `handdrawn`：手绘线稿、知识卡、草图感；`ian-handdrawn-ppt`、`ppt-image-first`。
+   - `illustrated`：文字配图、插画、场景化信息图；`baoyu-slide-deck`、`ppt-image-first`。
+   - `editable-vector`：原生可编辑矢量图或局部 SVG；`ppt-master`、`bggg-creator-image2ppt`、`qiaomu-ppt`。
+   - `interactive-web`：HTML、动画、演讲者视图、浏览器交互；`open-slide`、`PPT-as-code`、`guizang-ppt-skill`。
+   - `bento`：高密度一页信息图；`bentohttp-ppt`、`qiaomu-bento-ppt`。
+   - `evidence-consulting`：SCR、战略、经营、安全或制造证据链图；`cyber-ppt`、`ppt-master`。
+
+用户可回复“中文技术解释图 + 可编辑PPTX”或“手绘式 + 图片型PPT”。出现手绘、技术解释、文字配图、可编辑 PPTX、HTML/动画、Bento、SCR/证据链或明确 provider 后不再重复提问。默认推荐 `technical-native`，便于保留事实、关系和后续编辑能力。
 
 ## 4. 关键混合路线
 
@@ -109,6 +126,9 @@ metadata:
 - `用 $lvsea-ppt 把这组 PPT 截图转成可编辑 PPTX，文字尽量是真文本，复杂背景作为图片组件，并输出逐页 QA。`
 - `用 $lvsea-ppt 把这个 SVG/HTML 设计稿转成可编辑 PPTX，先判断哪些节点能转原生对象，不能转的局部保留为 SVG，不要整页截图。`
 - `用 $lvsea-ppt 把这篇公众号文章做成一页高密度 Bento HTML，保留来源图片并检查 12 pt 级别可读性。`
+- `用 $lvsea-ppt 做一张流程图。`
+  - 首轮应先列出“中文技术解释图 / 手绘式 / 文字配图 / 原生可编辑矢量图 / HTML 动画 / Bento / 咨询证据链”等选项，不应直接猜风格。
+- `用 $lvsea-ppt 做一张手绘式中文技术流程图，输出图片型 PPTX，后续再考虑可编辑重建。`
 
 ## 8. 注意事项、限制与能力边界
 

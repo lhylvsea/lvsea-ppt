@@ -33,5 +33,10 @@
   "adversarial": [
     {"text": "只给我一个PPTX文件名，不要制作内容", "family": "file_name_only", "expected_trigger": false},
     {"text": "只审阅这份PPTX的许可证，不要生成或修改演示文稿", "family": "license_only", "expected_trigger": false}
+  ],
+  "should_clarify": [
+    {"text": "帮我做一张流程图", "family": "diagram_ambiguous"},
+    {"text": "帮我做一个行程图", "family": "diagram_semantic_ambiguous"},
+    {"text": "做一个关系图", "family": "diagram_ambiguous"}
   ]
 }

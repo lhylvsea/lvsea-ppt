@@ -42,6 +42,13 @@ def main() -> int:
         result = choose_route(case["text"])
         if result["route"] != "native-create":
             failures.append(f"negative: {case['text']} -> {result['route']}")
+    for case in cases.get("should_clarify", []):
+        checked += 1
+        result = choose_route(case["text"])
+        if result["route"] != "clarification-required" or result["status"] != "needs-user-choice":
+            failures.append(f"clarify: {case['text']} -> {result['route']} / {result['status']}")
+        elif not result.get("clarification", {}).get("questions"):
+            failures.append(f"clarify: {case['text']} returned no questions")
     if failures:
         print(json.dumps({"status": "FAIL", "checked": checked, "failures": failures}, ensure_ascii=False, indent=2))
         return 1
