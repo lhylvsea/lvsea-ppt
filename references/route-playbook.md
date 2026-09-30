@@ -7,16 +7,18 @@ Use the first decisive signal in this order:
 1. Explicit output format or named provider.
 2. Input shape: existing PPTX, image, SVG/HTML, URL/article, source document, or free topic.
 3. Editability requirement: native editable, partially editable, browser-editable, or image-only.
-4. Risk and audience: evidence-heavy/official/production/safety versus creative/demo.
-5. Iteration mode: one-shot, preview-first, browser loop, or page-by-page approval.
-6. Default local preference: `ppt-master` for editable PPTX and `CyberPPT` for evidence-heavy work.
+4. Diagram ambiguity gate: if the request only names a broad diagram, pause and ask for semantic scope and presentation style.
+5. Risk and audience: evidence-heavy/official/production/safety versus creative/demo.
+6. Iteration mode: one-shot, preview-first, browser loop, or page-by-page approval.
+7. Default local preference: `ppt-master` for editable PPTX and `CyberPPT` for evidence-heavy work.
 
-Do not ask the user to choose a route when the signals already resolve it. Ask only when two routes have materially different output contracts and the request does not reveal which one is wanted.
+Do not ask the user to choose a route when the signals already resolve it. Ask only when two routes have materially different output contracts and the request does not reveal which one is wanted. “你来定/直接做/不用确认” explicitly bypasses the diagram gate and uses the recommended default.
 
 ## 2. Deterministic route rules
 
 | Signals | Route | Primary candidate | Collaborator / fallback |
 | --- | --- | --- | --- |
+| broad `图/流程图/行程图/路线图/架构图/关系图/示意图` without purpose/style | `clarification-required` | none before user choice | return semantic question + style menu |
 | `图片/截图/海报/PPT图片` + `可编辑/PPTX` | `image-to-editable` | `GordenImage2PPTX`, `bggg-creator-image2ppt` | `ppt-master` QA |
 | `HTML/SVG` + `PPTX/PowerPoint/可编辑` | `structured-import` | `ppt-master` | `bggg-creator-image2ppt` |
 | `现有PPTX/模板/套用/保留排版/只改文字` | `native-template-fill` | `ppt-master`, `GordenPPTSkill` | `CyberPPT` only for evidence review |
@@ -30,6 +32,31 @@ Do not ask the user to choose a route when the signals already resolve it. Ask o
 | `封面图/章节图/概念图/PPT配图` without deck | `visual-asset` | `ppt-design-prompt` | `imagegen` |
 | `动画HTML/录屏/动态流程` | `motion-html` | `AI_Animation`, `frontend-slides` | static HTML fallback |
 | no decisive signal, PPT requested | `native-create` | `ppt-master` | `cyber-ppt` when source risk is high |
+
+## 2.1 Diagram ambiguity gate
+
+The gate applies to creation requests containing broad diagram nouns such as `流程图`, `行程图`, `路线图`, `架构图`, `关系图`, `示意图`, `逻辑图`, `信息图`, `工艺图` or `图解`.
+
+Return `route=clarification-required` and `status=needs-user-choice` when the user has not supplied a style, format, editability, named provider or a direct default instruction. The machine-readable response must include:
+
+- `clarification.questions`: one semantic question for ambiguous `行程图/路线图`, plus one style question when style is missing;
+- `clarification.recommended_choice`: `technical-native`;
+- `clarification.resume_prompt`: a short example that lets the user answer in one line;
+- `choices[].route` and `choices[].providers`: the next route and the original Skill branches behind it.
+
+The style menu is intentionally explicit:
+
+| Choice | Meaning | Route / source branches |
+| --- | --- | --- |
+| `technical-native` | 中文技术解释图，原生文本、形状和箭头 | `native-create`: `ppt-master`, `cyber-ppt`, `qiaomu-ppt` |
+| `handdrawn` | 手绘线稿、知识卡、草图感 | `image-first-visual`: `ian-handdrawn-ppt`, `ppt-image-first` |
+| `illustrated` | 文字配图、插画、场景化信息图 | `image-first-visual`: `baoyu-slide-deck`, `ppt-image-first` |
+| `editable-vector` | 原生可编辑矢量或局部 SVG | `structured-import`: `ppt-master`, `bggg-creator-image2ppt`, `qiaomu-ppt` |
+| `interactive-web` | HTML、动画、演讲者视图、浏览器交互 | `html-first-iterate`: `open-slide`, `PPT-as-code`, `guizang-ppt-skill` |
+| `bento` | 高密度一页信息图 | `bento-onepage`: `bentohttp-ppt`, `qiaomu-bento-ppt` |
+| `evidence-consulting` | SCR、战略、经营、安全、制造证据链 | `evidence-consulting`: `cyber-ppt`, `ppt-master` |
+
+Explicit signals such as “手绘式”“中文技术解释”“文字配图”“可编辑 PPTX”“HTML 动画”“Bento”“SCR/证据链” count as a choice and must not trigger a redundant clarification. An explicit provider name also bypasses the gate.
 
 ## 3. Provider selection
 

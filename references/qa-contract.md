@@ -12,6 +12,13 @@ Every formal run should leave a compact record of:
 - render commands and output paths;
 - visual review status and known limitations.
 
+## Diagram route checks
+
+- Broad requests such as “流程图/行程图/路线图/架构图/关系图” must pause at `clarification-required` when purpose or presentation style is missing.
+- The response must expose a semantic question when “行程图/路线图” can mean travel, process, system or strategy, and must expose the seven style branches with their next route and provider candidates.
+- Explicit style, format, provider or “你来定/直接做” instructions must not be blocked by a redundant clarification question.
+- The selected diagram style and editability boundary must be copied into the later route decision and final QA record.
+
 ## Native PPTX checks
 
 - Opens with `python-pptx`, PowerPoint, WPS or the provider's documented reader.

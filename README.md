@@ -41,6 +41,7 @@ C:\Users\<用户名>\.codex\skills\lvsea-ppt
 
 | 用户目标 | 主路线 | 常见执行器 | 交付重点 |
 | --- | --- | --- | --- |
+| 图/流程图描述不清 | `clarification-required` | 暂不选 provider | 先确认语义范围、表现风格和编辑边界 |
 | 新建可编辑 PPTX | `native-create` | `ppt-master` / `cyber-ppt` | 内容证据、SVG/PPTX、逐页 QA |
 | 套公司模板 | `native-template-fill` | `ppt-master` Fill Native / `GordenPPTSkill` | 保留版式、填充计划、回读 |
 | 严肃经营/安全/战略汇报 | `evidence-consulting` | `cyber-ppt` | SCR、证据表、严格检查 |
@@ -53,6 +54,22 @@ C:\Users\<用户名>\.codex\skills\lvsea-ppt
 | HTML -> 视觉终版 | `hybrid-html-to-visual` | `open-slide` + `baoyu-slide-deck` | 双源交付、再决定是否重建可编辑版 |
 
 完整路由规则见 [`references/route-playbook.md`](references/route-playbook.md)，执行器能力与许可证见 [`references/provider-matrix.md`](references/provider-matrix.md)。
+
+## 图形请求如何选择
+
+“流程图”“行程图”“路线图”“架构图”“关系图”“示意图”不是单一产物。没有明确风格时，路由器会暂停 provider 选择，并让用户从以下分支中选择：
+
+| 选择 | 适合什么 | 典型路线 |
+| --- | --- | --- |
+| 中文技术解释图 | 工艺、设备、系统、培训、业务流程 | 原生可编辑 PPTX，`ppt-master` / `cyber-ppt` |
+| 手绘式 | 草图、知识卡、轻量技术叙事 | `ian-handdrawn-ppt` / `ppt-image-first` |
+| 文字配图/插画式 | 场景化说明、视觉传播、概念图 | `baoyu-slide-deck` / `ppt-image-first` |
+| 原生可编辑矢量图 | 文字、路径、箭头、分组需要继续修改 | `ppt-master` / `bggg-creator-image2ppt` |
+| HTML/动画交互图 | 浏览器演示、动画、录屏、演讲者视图 | `open-slide` / `PPT-as-code` / `guizang-ppt-skill` |
+| 一页 Bento 信息图 | 文章、URL、公众号或管理摘要 | `bentohttp-ppt` / `qiaomu-bento-ppt` |
+| 咨询/证据链图 | SCR、战略、经营、安全、制造分析 | `cyber-ppt` / `ppt-master` |
+
+如果用户明确说“你来定/直接做”，默认采用“中文技术解释图 + 原生可编辑 PPTX”，并在交付中记录这一假设。
 
 ## 四个真实应用场景
 

@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.1.2 - 2026-09-30
+
+- Added a clarification gate for broad diagram requests such as 流程图、行程图、路线图、架构图 and 关系图.
+- Added semantic-purpose and visual-style menus, including technical-native, hand-drawn, illustrated, editable-vector, interactive-web, Bento and evidence-consulting branches.
+- Added explicit-choice, named-provider and "你来定/直接做" bypass rules, with route/unit/evaluation coverage.
+
 ## 0.1.1 - 2026-08-19
 
 - Refreshed the generated Skill IR, trigger evaluation and context-budget evidence after the final discovery-contract update.

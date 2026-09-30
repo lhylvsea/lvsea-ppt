@@ -2,7 +2,7 @@
 
 ## Result
 
-- Skill: `lvsea-ppt` `0.1.1`
+- Skill: `lvsea-ppt` `0.1.2`
 - Owner: `海洋哥 / lhylvsea`
 - Job: 统一派发 PPT、HTML、图片、SVG、Bento、动画和模板工作流，并以事实、编辑性、渲染和视觉质量门交付。
 - Package root: repository root
@@ -19,7 +19,7 @@ The package routes to existing provider Skills when available. It does not vendo
 
 ## Verification boundary
 
-- Static package checks: route fixtures `PASS: 14/14`; unit tests `PASS: 5`; Agent Skills quick validator `PASS`; Skill IR generated; context budget `PASS` with root `11,547` bytes.
+- Static package checks: route fixtures `PASS: 17/17`; diagram clarification cases `PASS: 3/3`; unit tests `PASS: 11`; Agent Skills quick validator `PASS`; Skill IR generated; context budget `PASS` with root `13,993` bytes.
 - Trigger regression: `PASS: 19/19` across positive, negative, near-neighbor and adversarial cases.
 - Route regression: deterministic local fixture.
 - Provider-backed PPTX/HTML/image run: not part of package creation; mark `missing evidence` unless separately executed.
