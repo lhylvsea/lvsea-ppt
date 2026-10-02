@@ -49,6 +49,8 @@ def main() -> int:
             failures.append(f"clarify: {case['text']} -> {result['route']} / {result['status']}")
         elif not result.get("clarification", {}).get("questions"):
             failures.append(f"clarify: {case['text']} returned no questions")
+        elif case.get("family") == "onepage_style_ambiguous" and result.get("clarification", {}).get("kind") != "onepage-style":
+            failures.append(f"style-gate: {case['text']} returned {result.get('clarification', {}).get('kind')}")
     if failures:
         print(json.dumps({"status": "FAIL", "checked": checked, "failures": failures}, ensure_ascii=False, indent=2))
         return 1

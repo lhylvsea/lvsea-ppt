@@ -1,9 +1,9 @@
 ---
 name: lvsea-ppt
-description: "中文优先的终极 PPT 总调度 Skill：根据内容来源、受众、编辑性、交付格式和视觉风险，在原生可编辑 PPTX、SVG/HTML 到 PPTX、浏览器 HTML PPT、图片型 PPT、手绘技术页、Bento 单页、动画演示和配图资产路线之间选择最合适的专业执行器，保留事实与可继续编辑源文件，并完成结构、渲染、视觉和交互验收。Use when the user asks to 做PPT、制作演示文稿、生成可编辑PPTX、图片转PPTX、HTML转PPTX、SVG转PPTX、先做HTML再导出PPTX、做图片版PPT、网页PPT、Bento单页、PPT配图、流程图、行程图、路线图、架构图、关系图、示意图或统一派发多个PPT Skill。"
+description: "中文优先的 PPT 总调度 Skill：根据内容来源、受众、编辑性、交付格式和视觉风险，在原生可编辑 PPTX、SVG/HTML 到 PPTX、浏览器 HTML PPT、图片型 PPT、手绘技术页、Bento 单页、动画演示和配图资产路线之间选择合适的执行器；网页/URL 默认只作为来源材料，不自动路由 Bento；一页 PPT 未指定版式时先给出推荐风格与可选路线。Use when the user asks to 做PPT、制作演示文稿、生成可编辑PPTX、网页内容转PPT、图片转PPTX、HTML转PPTX、SVG转PPTX、先做HTML再导出PPTX、做图片版PPT、Bento单页、PPT配图、流程图、行程图、路线图、架构图、关系图、示意图或统一派发多个PPT Skill。"
 metadata:
   author: "海洋哥 / lhylvsea"
-  version: "0.1.2"
+  version: "0.1.3"
   archetype: "vertical-presentation-router"
 ---
 
@@ -53,7 +53,8 @@ metadata:
 | `evidence-consulting` | SCR、战略、生产、安全、经营分析、数据密集 | `$cyber-ppt`；`$ppt-master` | 证据台账、故事线、可编辑 PPTX、严格 QA |
 | `html-first-iterate` | 先做 HTML/React/网页 PPT，在浏览器里反复改 | `$open-slide` / `$PPT-as-code` / `$dashiai-ppt` | 可运行 HTML、预览、可选 PPTX 导出 |
 | `html-presenter` | 演讲、发布会、杂志风、Swiss、WebGL、讲稿与演讲者视图 | `$guizang-ppt-skill` / `$PPT-as-code` | 单文件或静态 HTML、演讲备注、交互核查 |
-| `bento-onepage` | 文章、URL、公众号、报告做一页高密度仿 PPT | `$bentohttp-ppt` / `$qiaomu-bento-ppt` | 可编辑离线 Bento HTML、内容计划、QA |
+| `clarification-required` | URL/文章做一页 PPT 但未指定构图路线 | 暂不选 provider | 生成前推荐风格、四项风格选择、恢复提示 |
+| `bento-onepage` | 用户明确要求 Bento、信息卡片或卡片矩阵 | `$bentohttp-ppt` / `$qiaomu-bento-ppt` | 可编辑离线 Bento HTML、内容计划、QA |
 | `image-first-visual` | 视觉冲击、图片版 PPT、手绘页、分享型图片 deck | `$baoyu-slide-deck` / `$ppt-image-first` / `$ian-handdrawn-ppt` | PNG 图组、图片型 PPTX/PDF、提示词与预览 |
 | `image-to-editable` | 图片、截图、海报、图片 PPT 转可编辑 PPTX | `$GordenImage2PPTX` / `$bggg-creator-image2ppt` | 分层 manifest、可编辑 PPTX、逐页预览 |
 | `structured-import` | HTML/SVG/网页设计稿转 PPTX，保留结构和文本编辑性 | `$ppt-master` SVG-first；`$bggg-creator-image2ppt` | SVG/manifest、PPTX、降级说明、QA |
@@ -62,6 +63,23 @@ metadata:
 | `motion-html` | 动画 HTML、流程演示、录屏配套、动态 Web 视觉 | `$AI_Animation` / `$frontend-slides` | 可运行 HTML、静态降级、动效检查 |
 
 优先级：用户明确格式/工具 > 输入形态 > 编辑性 > 受众与风险 > 迭代方式 > 默认偏好。不要同时调用所有执行器。
+
+### URL 来源与一页版式闸门
+
+- `http://`、`https://`、网页、公众号和文章链接首先只被视为来源材料，不再自动等同于 Bento。
+- 用户明确说 `Bento`、`信息卡片`、`卡片矩阵` 或指定 `$bentohttp-ppt` / `$qiaomu-bento-ppt` 时，才进入 `bento-onepage`。
+- 用户要求“做一页 PPT/可编辑 PPTX”但没有说明版式时，先返回 `status=needs-user-choice`，推荐“模板构图参考版”，并给出“模板构图参考版 / 图文叙事版 / 时间轴演进版 / Bento 信息卡片版”四项选择。
+- “参考 PPT-Design/DesignPPT.md/公司模板”表示借鉴构图、色系和组件，不等于 `native-template-fill`；只有明确套用、填充、保留原版式或只改文字时才填充现有 PPTX。
+- 生成前必须读取本机 `PPT-Design/DesignPPT.md`，再按内容关系选择逻辑图、时间轴、主视觉、流程或其他构图；不得因为输入是 URL 就固定使用仪表盘加卡片矩阵。
+
+风格菜单的实际路由如下：
+
+| 风格 | 适用内容 | 路线 |
+| --- | --- | --- |
+| `design-reference-native` 模板构图参考版（推荐） | 正式汇报、政策、制造、安全、经营和一般文章 | `native-create`；`ppt-master` / `qiaomu-ppt` |
+| `editorial-photo` 图文叙事版 | 新闻、人物、现场和需要保留原文照片的材料 | `native-create`；原生图片与文字混排 |
+| `timeline-policy` 时间轴演进版 | 年份、阶段、历程、政策演进和行动路径 | `native-create`；时间轴/阶段带为主骨架 |
+| `bento-info` Bento 信息卡片版 | 明确要求 Bento、信息卡片或 HTML 单页 | `bento-onepage`；`bentohttp-ppt` / `qiaomu-bento-ppt` |
 
 ### 图形请求的歧义闸门
 
@@ -121,6 +139,10 @@ metadata:
 
 ## 7. 中文调用示例
 
+- `用 $lvsea-ppt 把这个网页链接做成一页可编辑 PPTX，保留原文图片。` 首轮应先给出推荐的“模板构图参考版”和其他三项风格，不得直接路由 Bento。
+- `用 $lvsea-ppt 把这篇文章做成一页 PPT，采用图文叙事版，参考 PPT-Design 下的模板构图但不要直接套模板。` 直接进入 `native-create`，并保留真实图片和原生文字。
+- `用 $lvsea-ppt 把这篇文章做成一页 Bento 信息图。` 仅在明确选择 Bento 后进入 `bento-onepage`。
+- `用 $lvsea-ppt 把这篇网页文章做成一页 PPT，你来定风格。` 跳过偏好闸门，采用推荐的“模板构图参考版”，并在假设中写明这一选择。
 - `用 $lvsea-ppt 把生产运营月报做成高密度、可编辑 PPTX，按海洋哥偏好的稳重红白风格，保留数据和证据并逐页渲染检查。`
 - `用 $lvsea-ppt 先用 open-slide 做 HTML 草稿，浏览器里持续改到满意，再用 baoyu-slide-deck 做视觉终版，最后给我 HTML、图片型 PPTX 和可编辑重建版。`
 - `用 $lvsea-ppt 把这组 PPT 截图转成可编辑 PPTX，文字尽量是真文本，复杂背景作为图片组件，并输出逐页 QA。`
@@ -132,6 +154,8 @@ metadata:
 
 ## 8. 注意事项、限制与能力边界
 
+- URL、文章、公众号和网页不是版式名称；来源形态不会自动触发 Bento。
+- `PPT-Design/DesignPPT.md` 是视觉上位准则，参考模板用于提取构图能力；模板参考、模板填充和 Bento 信息卡片是三种不同契约。
 - 本 Skill 是路由与质量总线，不替代每个专业执行器，也不会凭空安装上游工具、创建 MCP 会话、生成外部凭据或保证图片模型可用。
 - 上游 Skill 的许可证、模板授权、专有导出器、非商业限制和第三方素材要求继续有效；只抽取方法、路由和质量规则，不把上游源码、模板、图片、商标或私人资料打包进本仓库。
 - “HTML 可编辑”不等于“PPTX 原生可编辑”；“PPTX 文件存在”不等于“能打开、可回读或视觉通过”。

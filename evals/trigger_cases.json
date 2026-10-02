@@ -37,6 +37,8 @@
   "should_clarify": [
     {"text": "帮我做一张流程图", "family": "diagram_ambiguous"},
     {"text": "帮我做一个行程图", "family": "diagram_semantic_ambiguous"},
-    {"text": "做一个关系图", "family": "diagram_ambiguous"}
+    {"text": "做一个关系图", "family": "diagram_ambiguous"},
+    {"text": "把这个网页链接内容制作成一页可编辑PPTX，保留原文图片", "family": "onepage_style_ambiguous"},
+    {"text": "把这篇文章做成一页PPT，参考PPT-Design和公司模板", "family": "onepage_style_ambiguous"}
   ]
 }

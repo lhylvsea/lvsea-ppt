@@ -42,18 +42,30 @@ C:\Users\<用户名>\.codex\skills\lvsea-ppt
 | 用户目标 | 主路线 | 常见执行器 | 交付重点 |
 | --- | --- | --- | --- |
 | 图/流程图描述不清 | `clarification-required` | 暂不选 provider | 先确认语义范围、表现风格和编辑边界 |
+| URL/文章做一页 PPT 但未指定版式 | `clarification-required` | 暂不选 provider | 推荐版式、四项风格选择、可恢复提示 |
 | 新建可编辑 PPTX | `native-create` | `ppt-master` / `cyber-ppt` | 内容证据、SVG/PPTX、逐页 QA |
 | 套公司模板 | `native-template-fill` | `ppt-master` Fill Native / `GordenPPTSkill` | 保留版式、填充计划、回读 |
 | 严肃经营/安全/战略汇报 | `evidence-consulting` | `cyber-ppt` | SCR、证据表、严格检查 |
 | HTML 先行持续修改 | `html-first-iterate` | `open-slide` / `PPT-as-code` / `dashiai-ppt` | HTML 源、浏览器迭代、可选导出 |
 | 演讲者视图/杂志/Swiss | `html-presenter` | `guizang-ppt-skill` / `PPT-as-code` | 讲稿、导航、演示交互 |
-| 公众号/URL 一页 Bento | `bento-onepage` | `bentohttp-ppt` / `qiaomu-bento-ppt` | 1280x720、密度、来源图片 |
+| 明确要求 Bento/信息卡片一页 | `bento-onepage` | `bentohttp-ppt` / `qiaomu-bento-ppt` | 1280x720、密度、来源图片 |
 | 图片/截图转可编辑 | `image-to-editable` | `GordenImage2PPTX` / `bggg-creator-image2ppt` | 文字真编辑、组件层、manifest |
 | HTML/SVG 转 PPTX | `structured-import` | `ppt-master` SVG-first | 原生对象优先、局部 SVG 降级 |
 | 图片型视觉终版 | `image-first-visual` | `baoyu-slide-deck` / `ppt-image-first` / `ian-handdrawn-ppt` | 逐页 PNG、提示词、图片型 PPTX |
 | HTML -> 视觉终版 | `hybrid-html-to-visual` | `open-slide` + `baoyu-slide-deck` | 双源交付、再决定是否重建可编辑版 |
 
 完整路由规则见 [`references/route-playbook.md`](references/route-playbook.md)，执行器能力与许可证见 [`references/provider-matrix.md`](references/provider-matrix.md)。
+
+## URL 来源不会自动变成 Bento
+
+URL、网页、公众号和文章链接首先是内容来源，不是版式信号。请求“把网页做成一页 PPT/可编辑 PPTX”时，路由器会在生成前暂停，推荐 `design-reference-native`“模板构图参考版”，并提供四项可选路线：
+
+1. `design-reference-native` 模板构图参考版（推荐）：读取 `PPT-Design/DesignPPT.md`，按内容关系借鉴逻辑图和模板的构图、色系与组件，重新生成原生可编辑 PPTX。
+2. `editorial-photo` 图文叙事版：用原文真实照片、现场图或人物图做主视觉，配合引语与主题段落。
+3. `timeline-policy` 时间轴演进版：以年份、阶段、政策演进或行动路径为主骨架。
+4. `bento-info` Bento 信息卡片版：只有用户明确选择 Bento、信息卡片或卡片矩阵时才启用。
+
+“参考模板”与“套用模板”是两种不同请求：前者走 `native-create`，后者只有在明确“套用/填充/保留原版式/只改文字”时才走 `native-template-fill`。用户回复“你来定/直接做”时，路由器采用推荐风格并记录假设。
 
 ## 图形请求如何选择
 

@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.1.3 - 2026-10-02
+
+- Changed URL/article routing so a web link is treated as source material, not an implicit Bento style.
+- Added an explicit Bento opt-in rule and separated template reference from native template filling.
+- Added a pre-generation one-page style gate with `design-reference-native`, `editorial-photo`, `timeline-policy` and `bento-info` choices.
+- Added route regression coverage for URL, one-page, style-choice and template-reference cases.
+
 ## 0.1.2 - 2026-09-30
 
 - Added a clarification gate for broad diagram requests such as 流程图、行程图、路线图、架构图 and 关系图.

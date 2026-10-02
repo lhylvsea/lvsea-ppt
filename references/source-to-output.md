@@ -9,8 +9,18 @@
 | PNG/JPG/PPT screenshots | edit text and move components | layered editable PPTX | `image-to-editable` |
 | HTML/React deck | browser iteration | HTML first, optional PPTX | `html-first-iterate` |
 | SVG design | preserve vector/semantic groups | SVG source + PPTX | `structured-import` |
-| Article / URL / WeChat | one-page summary | Bento HTML or multi-page PPTX | `bento-onepage` / `native-create` |
+| Article / URL / WeChat | one-page summary without a named style | style-choice gate first, then native PPTX or explicit Bento HTML | `clarification-required` -> `native-create` / `bento-onepage` |
+| Article / URL / WeChat | explicit Bento / information cards | offline editable Bento HTML | `bento-onepage` |
+| Article / URL / WeChat | ordinary PPT/PPTX or multi-page deck | native editable PPTX + source + QA | `native-create` |
 | abstract visual idea | visual storytelling | PNG assets or image deck | `visual-asset` / `image-first-visual` |
+
+## URL/article style boundary
+
+An article, URL or WeChat page identifies the source material only. For a one-page
+PPT request without a named style, pause before provider selection and recommend
+`design-reference-native` after reading the local `PPT-Design/DesignPPT.md`.
+Use `editorial-photo`, `timeline-policy` or `bento-info` only when selected or
+when a direct “you decide” instruction accepts the recorded recommendation.
 
 ## Editable boundary
 

@@ -7,7 +7,8 @@ examples:
   - "先用 open-slide 做 HTML，再用图片路线做视觉终版"
   - "把 PPT 截图转成可编辑 PPTX"
   - "把 HTML/SVG 设计稿转成 PPTX并检查降级边界"
-  - "把公众号文章做成一页 Bento PPT"
+  - "把网页链接做成一页 PPT，先给出模板构图参考版、图文叙事版、时间轴演进版和 Bento 信息卡片版供选择"
+  - "把公众号文章明确做成一页 Bento PPT"
   - "做一张流程图"
   - "做一张手绘式中文技术流程图，输出图片型 PPTX"
 policy:

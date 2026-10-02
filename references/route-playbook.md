@@ -6,6 +6,7 @@ Use the first decisive signal in this order:
 
 1. Explicit output format or named provider.
 2. Input shape: existing PPTX, image, SVG/HTML, URL/article, source document, or free topic.
+   A URL/article is an input source, not a visual style; it must not imply Bento by itself.
 3. Editability requirement: native editable, partially editable, browser-editable, or image-only.
 4. Diagram ambiguity gate: if the request only names a broad diagram, pause and ask for semantic scope and presentation style.
 5. Risk and audience: evidence-heavy/official/production/safety versus creative/demo.
@@ -26,7 +27,7 @@ Do not ask the user to choose a route when the signals already resolve it. Ask o
 | `SCR/证据链/战略/经营/生产/安全/数据密集` | `evidence-consulting` | `cyber-ppt` | `ppt-master` |
 | `open-slide/React/HTML先行/浏览器持续改` | `html-first-iterate` | `open-slide`, `PPT-as-code` | `dashiai-ppt` |
 | `杂志/Swiss/WebGL/演讲者视图/发布会` | `html-presenter` | `guizang-ppt-skill`, `PPT-as-code` | `open-slide` |
-| `公众号/URL/文章/一页/Bento` | `bento-onepage` | `bentohttp-ppt`, `qiaomu-bento-ppt` | `ppt-master` for multi-page PPTX |
+| explicit `Bento`/`信息卡片`/`卡片矩阵` | `bento-onepage` | `bentohttp-ppt`, `qiaomu-bento-ppt` | `ppt-master` for multi-page PPTX |
 | `图片版/视觉震撼/手绘/baoyu/图片PPT` | `image-first-visual` | `baoyu-slide-deck`, `ppt-image-first`, `ian-handdrawn-ppt` | `GordenImage2PPTX` if editable |
 | `先HTML再图片终版/open-slide + baoyu` | `hybrid-html-to-visual` | HTML provider | image provider, then optional reconstruction |
 | `封面图/章节图/概念图/PPT配图` without deck | `visual-asset` | `ppt-design-prompt` | `imagegen` |
@@ -57,6 +58,29 @@ The style menu is intentionally explicit:
 | `evidence-consulting` | SCR、战略、经营、安全、制造证据链 | `evidence-consulting`: `cyber-ppt`, `ppt-master` |
 
 Explicit signals such as “手绘式”“中文技术解释”“文字配图”“可编辑 PPTX”“HTML 动画”“Bento”“SCR/证据链” count as a choice and must not trigger a redundant clarification. An explicit provider name also bypasses the gate.
+
+### 2.2 URL/article one-page style gate
+
+When a request combines a URL/article/公众号 source with “一页 PPT”, “单页 PPTX”,
+“一页可视化” or equivalent language but does not name a visual style, return
+`route=clarification-required` and `status=needs-user-choice` before provider
+selection. The response must include `clarification.kind=onepage-style`, a
+`recommended_style`, and these four actionable choices:
+
+| Choice | Composition contract | Route |
+| --- | --- | --- |
+| `design-reference-native` | Read `PPT-Design/DesignPPT.md`, sample the local logic/template decks, then rebuild a native editable page around one dominant visual and the content relationship. | `native-create` |
+| `editorial-photo` | Use relevant original photos/scene images as the visual narrative, with title, quote and a few thematic blocks. | `native-create` |
+| `timeline-policy` | Make dates, phases, evolution or action path the main spine; use images as evidence, not decoration. | `native-create` |
+| `bento-info` | Use an information-card or card-matrix composition and the Bento HTML route. | `bento-onepage` |
+
+The default recommendation is `design-reference-native` for formal, policy,
+manufacturing, safety, management and general source articles. It may be
+overridden by visible time/phase signals or explicit news/people/story signals.
+“参考模板” means borrowing composition and tokens; only “套用/填充/保留原
+版式/只改文字” selects `native-template-fill`. A direct instruction such as
+“你来定/直接做” bypasses the preference gate and records the recommended style
+in the route result.
 
 ## 3. Provider selection
 

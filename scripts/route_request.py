@@ -35,6 +35,45 @@ PROVIDERS: dict[str, dict[str, Any]] = {
 }
 
 
+STYLE_REFERENCE_POLICY = (
+    "生成前先读取本机 PPT-Design/DesignPPT.md，并按内容需要抽样逻辑图*.pptx 或公司PPT模板.pptx；"
+    "参考模板只借鉴构图、色系、层级和组件，不等于直接套用原生模板。只有用户明确要求套用/填充/保留原版式时，"
+    "才进入 native-template-fill。"
+)
+
+
+STYLE_PROFILES: dict[str, dict[str, Any]] = {
+    "design-reference-native": {
+        "label": "模板构图参考版（推荐）",
+        "description": "按 DesignPPT.md 与参考模板提取构图和色系，重新组织主视觉、逻辑链、时间线或重点区块；交付原生可编辑 PPTX，不机械复制卡片矩阵。",
+        "route": "native-create",
+        "providers": ["ppt-master", "qiaomu-ppt", "cyber-ppt"],
+        "recommendation": "适合正式汇报、政策文章、制造/安全/经营材料，能兼顾来源图片、事实结构和后续编辑。",
+    },
+    "editorial-photo": {
+        "label": "图文叙事版",
+        "description": "以原文真实照片或现场图作为主视觉，配合标题、引语和少量主题段落，形成新闻编辑式单页；图片服务事实表达，不用装饰图凑数。",
+        "route": "native-create",
+        "providers": ["ppt-master", "qiaomu-ppt", "ppt-image-first"],
+        "recommendation": "适合人物、现场、新闻稿或需要保留原文图片的文章。",
+    },
+    "timeline-policy": {
+        "label": "时间轴演进版",
+        "description": "把年份、阶段、政策演进或行动路径作为页面主骨架，用时间轴/阶段带承载事实，辅以关键结论和证据图片。",
+        "route": "native-create",
+        "providers": ["ppt-master", "qiaomu-ppt", "cyber-ppt"],
+        "recommendation": "适合带有明显年份、历程、阶段和演进关系的政策或专题文章。",
+    },
+    "bento-info": {
+        "label": "Bento 信息卡片版",
+        "description": "采用高密度信息卡片、指标块或卡片矩阵，优先交付离线可编辑 Bento HTML；它只在用户明确选择 Bento/信息卡片时启用。",
+        "route": "bento-onepage",
+        "providers": ["bentohttp-ppt", "qiaomu-bento-ppt", "dashiai-ppt"],
+        "recommendation": "适合明确要信息卡片、Bento 或 HTML 单页，而不是一般的 URL 到 PPTX。",
+    },
+}
+
+
 def _skill_roots(extra: list[str] | None = None) -> list[Path]:
     roots: list[Path] = []
     raw = os.environ.get("LVSEA_SKILLS_ROOTS", "")
@@ -87,6 +126,7 @@ def _explicit_provider(text: str) -> str | None:
         ("ppt-image-first", ["ppt-image-first"]),
         ("guizang-ppt-skill", ["guizang-ppt-skill"]),
         ("qiaomu-ppt", ["qiaomu-ppt"]),
+        ("bentohttp-ppt", ["bentohttp-ppt"]),
         ("qiaomu-bento-ppt", ["qiaomu-bento-ppt"]),
         ("gaiduo-ppt", ["gaiduo-ppt"]),
         ("ian-handdrawn-ppt", ["ian-handdrawn-ppt", "handdrawn"]),
@@ -95,6 +135,137 @@ def _explicit_provider(text: str) -> str | None:
         if _has(text, *terms):
             return provider
     return None
+
+
+def _explicit_slide_style(text: str) -> str | None:
+    """Return a one-page visual style only when the user actually names one."""
+    choices = [
+        (
+            "design-reference-native",
+            [
+                "design-reference-native",
+                "模板构图参考",
+                "参考模板构图",
+                "参考模板版式",
+                "红白逻辑",
+                "结构化汇报",
+                "逻辑汇报",
+                "中文技术解释",
+            ],
+        ),
+        (
+            "editorial-photo",
+            [
+                "editorial-photo",
+                "图文叙事",
+                "图文叙事版",
+                "新闻编辑版",
+                "照片主视觉",
+                "照片叙事",
+                "图文编辑版",
+            ],
+        ),
+        (
+            "timeline-policy",
+            [
+                "timeline-policy",
+                "政策时间轴",
+                "时间轴演进",
+                "时间线版",
+                "演进路径",
+                "历程版",
+            ],
+        ),
+        (
+            "bento-info",
+            [
+                "bento-info",
+                "bento",
+                "bento单页",
+                "bento 信息图",
+                "信息卡片",
+                "卡片矩阵",
+                "卡片化信息图",
+                "仪表盘卡片",
+                "html bento",
+            ],
+        ),
+    ]
+    for style, terms in choices:
+        if _has(text, *terms):
+            return style
+    return None
+
+
+def _style_options() -> list[dict[str, Any]]:
+    return [
+        {
+            "id": style_id,
+            "label": profile["label"],
+            "description": profile["description"],
+            "route": profile["route"],
+            "providers": profile["providers"],
+        }
+        for style_id, profile in STYLE_PROFILES.items()
+    ]
+
+
+def _recommended_slide_style(text: str) -> str:
+    if _has(text, "时间轴", "时间线", "历程", "演进", "沿革", "阶段", "年份"):
+        return "timeline-policy"
+    if _has(text, "新闻", "采访", "人物故事", "现场报道", "专题报道"):
+        return "editorial-photo"
+    return "design-reference-native"
+
+
+def _onepage_style_clarification(
+    text: str,
+    *,
+    is_onepage_visual: bool,
+    selected_style: str | None,
+    selected_diagram_choice: str | None,
+    explicit_provider: str | None,
+    template_apply: bool,
+    bypass: bool,
+) -> dict[str, Any] | None:
+    """Pause ambiguous one-page visual requests before choosing a provider.
+
+    A URL or article is an input shape, not a visual style. The gate keeps
+    Bento opt-in and exposes a small, actionable style menu for one-page work.
+    """
+    if (
+        not is_onepage_visual
+        or selected_style
+        or selected_diagram_choice
+        or explicit_provider
+        or template_apply
+        or bypass
+    ):
+        return None
+
+    recommended = _recommended_slide_style(text)
+    profile = STYLE_PROFILES[recommended]
+    return {
+        "route": "clarification-required",
+        "status": "needs-user-choice",
+        "reason": "网页/文章/URL 只是来源材料，不能单独决定一页 PPT 的版式；Bento 仅在明确选择时启用。",
+        "recommended_style": {"id": recommended, **profile},
+        "style_options": _style_options(),
+        "clarification": {
+            "kind": "onepage-style",
+            "questions": [
+                {
+                    "id": "slide_style",
+                    "question": "这份来源材料的一页 PPT，希望采用哪种构图路线？",
+                    "choices": _style_options(),
+                }
+            ],
+            "recommended_choice": recommended,
+            "recommended_reason": profile["recommendation"],
+            "reference_policy": STYLE_REFERENCE_POLICY,
+            "resume_prompt": "可直接回复：`模板构图参考版`、`图文叙事版`、`时间轴演进版` 或 `Bento 信息卡片版`；回复“你来定”则采用推荐路线。",
+        },
+    }
 
 
 def _explicit_diagram_choice(text: str) -> str | None:
@@ -249,19 +420,79 @@ def choose_route(request: str, extra_roots: list[str] | None = None) -> dict[str
 
     explicit = _explicit_provider(text)
     selected_choice = _explicit_diagram_choice(text)
+    selected_style = _explicit_slide_style(text)
+    if selected_style is None and selected_choice == "bento":
+        selected_style = "bento-info"
     has_editable = _has(text, "可编辑", "编辑", "pptx", "powerpoint", "真文本", "native")
     has_image = _has(text, "图片", "截图", "海报", "image", "png", "jpg", "视觉稿")
-    has_html = _has(text, "html", "网页", "浏览器", "react", "webgl", "网页ppt")
+    has_html = _has(text, "html", "浏览器", "react", "webgl", "网页ppt", "网页演示", "网页幻灯片")
     has_svg = _has(text, "svg")
-    has_template = _has(text, "模板", "套用", "保留排版", "只改文字", "原版式", "旧ppt")
+    template_apply = _has(
+        text,
+        "模板填充",
+        "模板套用",
+        "套用模板",
+        "套公司模板",
+        "填入模板",
+        "填充模板",
+        "保留排版",
+        "保留原版式",
+        "只改文字",
+        "替换模板内容",
+        "沿用模板",
+        "按模板制作",
+        "现有pptx",
+        "旧ppt",
+    )
+    template_reference = _has(
+        text,
+        "参考模板",
+        "参考ppt-design",
+        "参考 ppt-design",
+        "designppt",
+        "ppt-design",
+        "借鉴模板",
+        "模板构图",
+        "参考版式",
+        "模板风格",
+    )
     has_evidence = _has(text, "scr", "证据链", "战略", "经营分析", "生产运营", "安全生产", "制造", "数据密集", "咨询风")
     has_image_first = _has(text, "图片版", "图片型", "视觉冲击", "手绘", "image-first", "生图幻灯片", "图片ppt")
-    has_bento = _has(text, "bento", "一页", "公众号", "文章链接", "网页文章")
+    has_bento = _has(
+        text,
+        "bento",
+        "信息卡片",
+        "卡片矩阵",
+        "卡片化信息图",
+        "仪表盘卡片",
+        "html bento",
+        "bentohttp-ppt",
+        "qiaomu-bento-ppt",
+    )
     has_visual_asset = _has(text, "配图", "封面图", "章节图", "概念图", "背景图", "图片提示词", "安全区")
     has_motion = _has(text, "动画html", "动画网页", "录屏", "动态流程", "motion", "动画演示")
     has_presenter = _has(text, "演讲者视图", "讲稿备注", "杂志风", "swiss", "发布会", "演讲")
     wants_hybrid = _has(text, "先用 open-slide", "先用open-slide", "再用 baoyu", "再用baoyu", "html再", "html ->", "html到图片")
     has_diagram = _has(text, *DIAGRAM_TERMS)
+    has_url_or_article = bool(re.search(r"https?://\S+", text)) or _has(
+        text,
+        "url",
+        "网址",
+        "网页链接",
+        "文章链接",
+        "网页内容",
+        "网页文章",
+        "在线文章",
+        "公众号",
+        "原文",
+        "文章",
+        "报告",
+    )
+    has_onepage = _has(text, "一页", "单页", "一页式", "单页式", "one-page", "onepage", "单页可视化", "一页可视化")
+    has_presentation_output = _has(text, "ppt", "pptx", "powerpoint", "演示文稿", "幻灯片", "汇报页", "演示页", "presentation")
+    is_onepage_visual = has_onepage and (
+        has_presentation_output or has_url_or_article or _has(text, "可视化", "信息图", "信息页")
+    )
     has_style_signal = _has(
         text,
         "手绘",
@@ -349,7 +580,47 @@ def choose_route(request: str, extra_roots: list[str] | None = None) -> dict[str
             "status": clarification["status"],
         }
 
-    if selected_choice == "technical-native":
+    style_clarification = _onepage_style_clarification(
+        text,
+        is_onepage_visual=is_onepage_visual,
+        selected_style=selected_style,
+        selected_diagram_choice=selected_choice,
+        explicit_provider=explicit,
+        template_apply=template_apply,
+        bypass=bypass_diagram_gate,
+    )
+    if style_clarification:
+        return {
+            "request": original,
+            "route": style_clarification["route"],
+            "reason": style_clarification["reason"],
+            "primary_candidates": [],
+            "primary_provider": None,
+            "collaborator_candidates": [],
+            "collaborators": [],
+            "provider_status": {},
+            "clarification": style_clarification["clarification"],
+            "recommended_style": style_clarification["recommended_style"],
+            "style_options": style_clarification["style_options"],
+            "assumptions": {
+                "language": "zh-CN",
+                "canvas": "16:9",
+                "editable_default": True,
+                "minimum_body_size": "12pt for PPTX, 16px for HTML",
+                "source_url_is_not_visual_style": True,
+                "bento_requires_explicit_choice": True,
+                "design_reference_policy": STYLE_REFERENCE_POLICY,
+            },
+            "status": style_clarification["status"],
+        }
+
+    if selected_style in STYLE_PROFILES:
+        style_profile = STYLE_PROFILES[selected_style]
+        route = style_profile["route"]
+        candidates = style_profile["providers"]
+        collaborators = []
+        reason = f"用户已选择“{style_profile['label']}”，按该构图契约执行；URL/文章仅作为来源材料。"
+    elif selected_choice == "technical-native":
         route = "native-create"
         candidates = ["ppt-master", "cyber-ppt", "qiaomu-ppt"]
         collaborators = []
@@ -424,7 +695,7 @@ def choose_route(request: str, extra_roots: list[str] | None = None) -> dict[str
         candidates = ["open-slide", "PPT-as-code", "dashiai-ppt", "gaiduo-ppt"]
         collaborators = ["baoyu-slide-deck", "ppt-image-first", "ian-handdrawn-ppt"]
         reason = "请求明确要求浏览器 HTML 迭代后再生成视觉图片终版。"
-    elif has_template or explicit in {"GordenPPTSkill"}:
+    elif template_apply or explicit in {"GordenPPTSkill"}:
         route = "native-template-fill"
         candidates = ["ppt-master", "GordenPPTSkill"]
         collaborators = ["cyber-ppt"] if has_evidence else []
@@ -438,7 +709,7 @@ def choose_route(request: str, extra_roots: list[str] | None = None) -> dict[str
         route = "bento-onepage"
         candidates = ["bentohttp-ppt", "qiaomu-bento-ppt", "dashiai-ppt"]
         collaborators = []
-        reason = "内容是一页高密度文章/URL/Bento 信息页。"
+        reason = "用户明确指定 Bento/信息卡片路线，优先高密度布局和离线可编辑 HTML；普通 URL 不触发此分支。"
     elif has_diagram and _has(text, "文字配图", "图文", "配图式", "插画式", "插图式"):
         route = "image-first-visual"
         candidates = ["baoyu-slide-deck", "ppt-image-first", "ian-handdrawn-ppt"]
@@ -473,11 +744,11 @@ def choose_route(request: str, extra_roots: list[str] | None = None) -> dict[str
         route = "native-create"
         candidates = ["ppt-master", "cyber-ppt", "qiaomu-ppt"]
         collaborators = []
-        reason = "没有更强的格式信号，按海洋哥偏好默认走原生可编辑 PPTX。"
+        reason = "没有更强的格式信号，按海洋哥偏好默认走原生可编辑 PPTX；URL/文章只作为来源材料。"
 
     chosen = _first_available(candidates, availability)
     collab_status = [_find_provider(name, roots) for name in collaborators]
-    return {
+    result = {
         "request": original,
         "route": route,
         "reason": reason,
@@ -494,6 +765,15 @@ def choose_route(request: str, extra_roots: list[str] | None = None) -> dict[str
         },
         "status": "available" if chosen and availability.get(chosen, {}).get("available") else "fallback-or-unavailable",
     }
+    if selected_style in STYLE_PROFILES:
+        result["style"] = {"id": selected_style, **STYLE_PROFILES[selected_style]}
+    elif is_onepage_visual and (bypass_diagram_gate or explicit):
+        recommended = _recommended_slide_style(text)
+        result["style"] = {"id": recommended, **STYLE_PROFILES[recommended]}
+        result["design_reference_policy"] = STYLE_REFERENCE_POLICY
+    elif template_reference:
+        result["design_reference_policy"] = STYLE_REFERENCE_POLICY
+    return result
 
 
 def main() -> None:
