@@ -11,6 +11,10 @@ examples:
   - "把公众号文章明确做成一页 Bento PPT"
   - "做一张流程图"
   - "做一张手绘式中文技术流程图，输出图片型 PPTX"
+  - "用 oh-my-ppt 阅读来源并规划 16:9 可编辑 PPTX，再交给 ppt-master 导出"
+  - "用 oh-my-ppt 检查图表标签、单位、数值和 data-anim 动画边界"
+  - "用 $lvsea-ppt 调用 OpenPencil 做高密度 16:9 单页，保留 .op 源文件并输出可编辑 PPTX"
+  - "用 OpenPencil 做矢量逻辑图，再交给 ppt-master 完成 PPTX 导出和回读"
 policy:
   allow_implicit_invocation: true
   source_tier: "local-or-user-authorized-provider"

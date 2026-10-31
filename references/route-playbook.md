@@ -26,6 +26,7 @@ Do not ask the user to choose a route when the signals already resolve it. Ask o
 | `备注/旁白/转场/动画` + existing PPTX | `native-enhance` | `ppt-master` | provider-specific post-process |
 | `SCR/证据链/战略/经营/生产/安全/数据密集` | `evidence-consulting` | `cyber-ppt` | `ppt-master` |
 | `open-slide/React/HTML先行/浏览器持续改` | `html-first-iterate` | `open-slide`, `PPT-as-code` | `dashiai-ppt` |
+| explicit `OpenPencil/openpencil-design` or high-density one-page vector authoring | `native-create` | `openpencil-design` | `ppt-master` for verified native PPTX export or fallback |
 | `杂志/Swiss/WebGL/演讲者视图/发布会` | `html-presenter` | `guizang-ppt-skill`, `PPT-as-code` | `open-slide` |
 | explicit `Bento`/`信息卡片`/`卡片矩阵` | `bento-onepage` | `bentohttp-ppt`, `qiaomu-bento-ppt` | `ppt-master` for multi-page PPTX |
 | `图片版/视觉震撼/手绘/baoyu/图片PPT` | `image-first-visual` | `baoyu-slide-deck`, `ppt-image-first`, `ian-handdrawn-ppt` | `GordenImage2PPTX` if editable |
@@ -69,7 +70,7 @@ selection. The response must include `clarification.kind=onepage-style`, a
 
 | Choice | Composition contract | Route |
 | --- | --- | --- |
-| `design-reference-native` | Read `PPT-Design/DesignPPT.md`, sample the local logic/template decks, then rebuild a native editable page around one dominant visual and the content relationship. | `native-create` |
+| `design-reference-native` | Read `PPT-Design/DesignPPT.md`, sample the local logic/template decks, then use OpenPencil for high-density vector composition when available and rebuild a native editable page around one dominant visual and the content relationship. | `native-create` |
 | `editorial-photo` | Use relevant original photos/scene images as the visual narrative, with title, quote and a few thematic blocks. | `native-create` |
 | `timeline-policy` | Make dates, phases, evolution or action path the main spine; use images as evidence, not decoration. | `native-create` |
 | `bento-info` | Use an information-card or card-matrix composition and the Bento HTML route. | `bento-onepage` |
@@ -82,9 +83,15 @@ overridden by visible time/phase signals or explicit news/people/story signals.
 “你来定/直接做” bypasses the preference gate and records the recommended style
 in the route result.
 
+When the selected `design-reference-native` page is a high-density one-page
+request, the router may select `openpencil-design` first and add `ppt-master` as
+the native PPTX collaborator. This is an authoring preference, not a claim that
+the current OpenPencil runtime always exports PPTX. The executor must probe the
+actual `op` capability and record the fallback when `export-deck` is absent.
+
 ## 3. Provider selection
 
-For each route, select the first provider whose skill directory or explicitly documented command is actually discoverable. The router reports unavailable candidates rather than claiming they ran. An unavailable preferred provider may be replaced only by a declared fallback with the same output contract.
+For each route, select the first provider whose skill directory or explicitly documented command is actually discoverable. The router reports unavailable candidates rather than claiming they ran. An unavailable preferred provider may be replaced only by a declared fallback with the same output contract. For `openpencil-design`, Skill discovery is not enough: the executor must also probe `op --version` and the requested exporter before claiming PPTX output.
 
 Provider availability roots are discovered in this order:
 

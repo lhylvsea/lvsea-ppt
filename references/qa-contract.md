@@ -29,6 +29,14 @@ Every formal run should leave a compact record of:
 - Charts/tables are native only when the provider's contract and readback prove it; otherwise report fallback image/SVG.
 - Render every slide to PNG/PDF and inspect all pages, not only page 1.
 
+## OpenPencil route checks
+
+- Confirm the discovered `openpencil-design` Skill and probe `op --version` before execution.
+- Keep the `.op` file as the canonical PenNode/vector source and record the actual `design`, `design:refine` and preview/export commands used.
+- Probe the requested PPTX exporter in the current runtime; an advertised or documented command is not evidence that the current headless server registered it.
+- If PPTX export is unavailable, use the declared native fallback or stop with a blocked native-output claim; never rename a PNG preview as editable PPTX.
+- Read back and render the final PPTX separately from the OpenPencil preview, then record native-text/native-shape/image-component boundaries.
+
 ## HTML checks
 
 - Open the actual local URL or file, not only source syntax.

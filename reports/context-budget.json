@@ -1,99 +1,159 @@
 {
   "ok": true,
-  "status": "pass",
-  "reason": "root SKILL.md is 13993 bytes within production budget",
+  "status": "warn",
+  "reason": "root SKILL.md is 19693 bytes; recommended threshold is 14000",
   "tier": "production",
-  "root_skill_bytes": 13993,
+  "root_skill_bytes": 19693,
   "root_budget_bytes": {
     "root_warn": 14000,
     "root_block": 20000
   },
   "resource_bytes": {
-    "references": 18873,
-    "scripts": 27741,
-    "evals": 3340,
-    "reports": 25810
+    "references": 47281,
+    "scripts": 46653,
+    "evals": 4171,
+    "reports": 36500
   },
-  "total_measured_bytes": 89757,
+  "total_measured_bytes": 154298,
   "files": [
     {
       "path": "references/license-boundaries.md",
-      "bytes": 1307,
+      "bytes": 1910,
+      "on_demand": true
+    },
+    {
+      "path": "references/oh-my-ppt/chart.md",
+      "bytes": 733,
+      "on_demand": true
+    },
+    {
+      "path": "references/oh-my-ppt/data-animation.md",
+      "bytes": 713,
+      "on_demand": true
+    },
+    {
+      "path": "references/oh-my-ppt/format-catalog.md",
+      "bytes": 653,
+      "on_demand": true
+    },
+    {
+      "path": "references/oh-my-ppt/integration.json",
+      "bytes": 1839,
+      "on_demand": true
+    },
+    {
+      "path": "references/oh-my-ppt/layout.md",
+      "bytes": 1383,
+      "on_demand": true
+    },
+    {
+      "path": "references/oh-my-ppt/LICENSE",
+      "bytes": 10595,
+      "on_demand": true
+    },
+    {
+      "path": "references/oh-my-ppt/NOTICE",
+      "bytes": 114,
+      "on_demand": true
+    },
+    {
+      "path": "references/oh-my-ppt/README.md",
+      "bytes": 2152,
+      "on_demand": true
+    },
+    {
+      "path": "references/oh-my-ppt/source-reading.md",
+      "bytes": 1263,
+      "on_demand": true
+    },
+    {
+      "path": "references/openpencil.md",
+      "bytes": 2304,
       "on_demand": true
     },
     {
       "path": "references/provider-matrix.md",
-      "bytes": 5731,
+      "bytes": 6853,
       "on_demand": true
     },
     {
       "path": "references/qa-contract.md",
-      "bytes": 2802,
+      "bytes": 3589,
       "on_demand": true
     },
     {
       "path": "references/route-playbook.md",
-      "bytes": 7080,
+      "bytes": 9749,
       "on_demand": true
     },
     {
       "path": "references/source-to-output.md",
-      "bytes": 1953,
+      "bytes": 3431,
       "on_demand": true
     },
     {
       "path": "scripts/route_request.py",
-      "bytes": 25268,
+      "bytes": 40518,
+      "on_demand": false
+    },
+    {
+      "path": "scripts/validate_oh_my_ppt_integration.py",
+      "bytes": 3262,
       "on_demand": false
     },
     {
       "path": "scripts/validate_route.py",
-      "bytes": 2473,
+      "bytes": 2873,
       "on_demand": false
     },
     {
       "path": "evals/trigger_cases.json",
-      "bytes": 3340,
+      "bytes": 4171,
       "on_demand": false
     },
     {
       "path": "reports/context-budget.json",
-      "bytes": 2248,
+      "bytes": 3619,
       "on_demand": true
     },
     {
       "path": "reports/creation-handoff.md",
-      "bytes": 2331,
+      "bytes": 3942,
+      "on_demand": true
+    },
+    {
+      "path": "reports/openpencil-integration.md",
+      "bytes": 2348,
       "on_demand": true
     },
     {
       "path": "reports/output-evidence.json",
-      "bytes": 533,
+      "bytes": 545,
       "on_demand": true
     },
     {
       "path": "reports/output-quality-scorecard.md",
-      "bytes": 1550,
+      "bytes": 1553,
       "on_demand": true
     },
     {
       "path": "reports/prior-art-research.md",
-      "bytes": 2755,
+      "bytes": 3641,
       "on_demand": true
     },
     {
       "path": "reports/skill-ir.json",
-      "bytes": 5767,
+      "bytes": 7638,
       "on_demand": true
     },
     {
       "path": "reports/synthesis-ledger.md",
-      "bytes": 2704,
+      "bytes": 4031,
       "on_demand": true
     },
     {
       "path": "reports/trigger-eval.json",
-      "bytes": 7922,
+      "bytes": 9183,
       "on_demand": true
     }
   ],

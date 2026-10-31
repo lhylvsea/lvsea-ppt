@@ -2,8 +2,8 @@
   "recommended_threshold": 0.33,
   "description_required_concepts": ["skill", "source_material", "authoring_action"],
   "positive_concepts": {
-    "skill": ["PPTX", "PowerPoint", "网页PPT", "Bento", "HTML", "SVG", "open-slide", "baoyu"],
-    "source_material": ["产品介绍", "模板", "安全生产", "截图", "设计稿", "HTML", "SVG", "公众号", "战略报告", "Swiss", "封面", "章节页", "动画", "流程演示"],
+    "skill": ["PPTX", "PowerPoint", "网页PPT", "Bento", "HTML", "SVG", "OpenPencil", "openpencil-design", "open-slide", "baoyu", "oh-my-ppt"],
+    "source_material": ["产品介绍", "模板", "安全生产", "截图", "设计稿", "高密度单页", "逻辑图", "HTML", "SVG", "公众号", "战略报告", "Swiss", "封面", "章节页", "动画", "流程演示", "source", "layout"],
     "authoring_action": ["做", "制作", "生成", "转成", "用", "做成", "调整", "填入", "输出", "创建"]
   },
   "negative_patterns": ["只解释", "翻译", "只给我", "只查看", "不要创建", "不要生成", "不要修改", "不要转换"],
@@ -18,12 +18,15 @@
     {"text": "做一个带演讲者视图和讲稿备注的Swiss风网页PPT", "family": "html_presenter", "min_concept_matches": 2},
     {"text": "给PPT封面和章节页生成留安全区的配图提示词", "family": "visual_asset", "min_concept_matches": 2},
     {"text": "做一个动画HTML流程演示，后面用于录屏", "family": "motion_html", "min_concept_matches": 2}
+    ,{"text": "Use oh-my-ppt to verify source facts and 16:9 layout before producing an editable PPTX", "family": "oh_my_ppt_advisory", "min_concept_matches": 2}
+    ,{"text": "用 OpenPencil 做一个高密度单页逻辑图，保留 .op 源文件并输出可编辑 PPTX", "family": "openpencil_native", "min_concept_matches": 2}
   ],
   "should_not_trigger": [
     {"text": "只解释一下PPT和PPTX的区别，不要创建文件", "family": "question_only"},
     {"text": "把这段PPT说明翻译成英文，不要执行工具", "family": "translation_only"},
     {"text": "只给我三个PPT主题方向，不要生成计划或文件", "family": "brainstorm_only"},
-    {"text": "只查看这张幻灯片截图，不要修改也不要转换", "family": "read_only"}
+    {"text": "只查看这张幻灯片截图，不要修改也不要转换", "family": "read_only"},
+    {"text": "只查看 OpenPencil Skill 文档，不要制作PPT", "family": "openpencil_read_only"}
   ],
   "near_neighbor": [
     {"text": "帮我开发一个复杂的React白板编辑器", "family": "custom_app"},

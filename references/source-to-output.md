@@ -5,6 +5,7 @@
 | Source | User intent | Preferred output | Primary route |
 | --- | --- | --- | --- |
 | Topic / notes / DOCX / PDF / XLSX | serious editable deck | PPTX + project + QA | `native-create` or `evidence-consulting` |
+| Topic / article / URL | explicit high-density one-page vector authoring | `.op` source + PNG/SVG preview + native PPTX when verified | `native-create` with `openpencil-design` and declared PPTX fallback |
 | Existing PPTX template | reuse visual shell | new PPTX, original untouched | `native-template-fill` |
 | PNG/JPG/PPT screenshots | edit text and move components | layered editable PPTX | `image-to-editable` |
 | HTML/React deck | browser iteration | HTML first, optional PPTX | `html-first-iterate` |
@@ -24,6 +25,12 @@ when a direct “you decide” instruction accepts the recorded recommendation.
 
 ## Editable boundary
 
+For an OpenPencil route, the canonical `.op` file is the editable PenNode design
+source, not a PowerPoint file. Treat its nodes as source-level editable objects;
+classify the PPTX derivative separately after export. If the exporter is not
+actually available, keep `.op` and the visual preview, then either use a
+declared native fallback or report that native PPTX delivery is blocked.
+
 Classify every visible object as one of:
 
 - `native-text`: editable text box or run.
@@ -37,8 +44,9 @@ The delivery report must count or list these categories when the chosen provider
 ## Export ladder
 
 1. Canonical source: content/evidence/slide plan + HTML/SVG/manifest/project.
-2. Editable derivative: PPTX with text and safe native objects.
-3. Visual derivative: PNG/JPG contact sheet or PDF.
-4. Share derivative: static HTML or offline Bento.
+2. OpenPencil authoring source when selected: `.op` with PenNode/vector structure.
+3. Editable derivative: PPTX with text and safe native objects.
+4. Visual derivative: PNG/JPG contact sheet or PDF.
+5. Share derivative: static HTML or offline Bento.
 
 Always keep the canonical source and editable derivative together. A screenshot or PDF is never the only backup for a requested editable deliverable.

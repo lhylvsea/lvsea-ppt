@@ -2,7 +2,7 @@
 
 ## 触发方式
 
-当用户提出“做 PPT、生成可编辑 PPTX、图片转 PPTX、HTML/SVG 转 PPTX、先做 HTML 再做视觉终版、网页 PPT、Bento 单页、PPT 配图或多 Skill 派发”时调用 `$lvsea-ppt`。
+当用户提出“做 PPT、生成可编辑 PPTX、图片转 PPTX、HTML/SVG 转 PPTX、先做 HTML 再做视觉终版、网页 PPT、Bento 单页、PPT 配图、用 OpenPencil 做高密度单页或多 Skill 派发”时调用 `$lvsea-ppt`。
 
 ## 输入与流程
 
@@ -31,6 +31,7 @@
 4. `用 $lvsea-ppt 把安全生产材料做成证据链清楚、逐页渲染检查的可编辑 PPTX。`
 5. `用 $lvsea-ppt 把这个网页链接做成一页可编辑 PPTX，保留原文图片。` 首轮先选择“模板构图参考版 / 图文叙事版 / 时间轴演进版 / Bento 信息卡片版”。
 6. `用 $lvsea-ppt 把这篇文章做成一页 PPT，采用图文叙事版，参考 PPT-Design 下的模板构图但不要直接套模板。`
+7. `用 $lvsea-ppt 调用 OpenPencil，把这篇材料做成高密度 16:9 单页，保留 .op 源文件并输出可编辑 PPTX。`
 
 ## 产物与验证
 
@@ -41,4 +42,5 @@
 - `HTML 可编辑` 不等于 `PPTX 原生可编辑`；图片型 PPTX 默认只保证图片层可替换。
 - 上游 provider、模板、字体、模型和第三方图片仍按各自许可证与凭据要求执行；本 Skill 不复制或暗中捆绑这些资产。
 - open-slide、baoyu、图片生成器等 provider 未安装时，路由器会给出可用替代与能力边界，不会把未实际调用的工具写成已完成。
+- OpenPencil 作为矢量构图 provider 使用；`.op` 和 PNG 可用不代表当前运行时有 PPTX exporter。需要 PPTX 时必须探测导出能力，并保留 `ppt-master` 或其他声明过的原生 fallback。
 - 来源材料不足时标记待补充，不伪造数字、现场、设备、工艺参数或事实证据。

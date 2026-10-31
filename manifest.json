@@ -1,9 +1,9 @@
 {
   "name": "lvsea-ppt",
-  "version": "0.1.3",
+  "version": "0.3.0",
   "owner": "海洋哥 / lhylvsea",
-  "updated_at": "2026-10-02",
-  "review_due": "2026-12-30",
+  "updated_at": "2026-10-31",
+  "review_due": "2027-01-31",
   "status": "active",
   "maturity_tier": "governed",
   "lifecycle_stage": "library",
@@ -11,11 +11,11 @@
   "skill_archetype": "vertical-presentation-router",
   "review_cadence": "quarterly",
   "intent": {
-    "job_to_be_done": "将多个 PPT、HTML、图片、SVG、动画和模板工作流统一派发到最合适的执行器，并以事实、编辑性、渲染和视觉质量门完成交付。",
+    "job_to_be_done": "将多个 PPT、HTML、图片、SVG、动画、模板和 OpenPencil 矢量构图工作流统一派发到最合适的执行器，并以事实、编辑性、渲染和视觉质量门完成交付。",
     "target_users": ["海洋哥及其本地 Codex 工作流", "制造企业管理者", "需要跨格式 PPT 产出的 Agent 使用者"],
     "inputs": ["topic", "markdown", "docx", "pdf", "xlsx", "url", "pptx", "png/jpg", "html", "svg", "codebase", "mixed source"],
     "outputs": ["editable pptx", "html deck", "image deck", "bento html", "svg/png assets", "source project", "qa evidence"],
-    "exclusions": ["one-off summary", "translation only", "unverified provider claims", "bundling upstream proprietary templates or private assets"]
+    "exclusions": ["one-off summary", "translation only", "unverified provider claims", "bundling upstream proprietary templates or private assets", "calling PNG or .op preview fully editable native PPTX"]
   },
   "risk": {
     "output_risk": "high",
@@ -50,8 +50,9 @@
     "npx_discovery_and_clean_install"
   ],
   "research_snapshot": {
-    "reviewed_at": "2026-08-19",
+    "reviewed_at": "2026-10-25",
     "source_report": "reports/prior-art-research.md",
+    "integration_report": "reports/openpencil-integration.md",
     "policy": "semantic adoption; do not mirror upstream wholesale"
   }
 }

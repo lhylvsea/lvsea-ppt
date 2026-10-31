@@ -1,0 +1,47 @@
+{
+  "provider": "oh-my-ppt",
+  "integration_mode": "semantic-adapter",
+  "upstream": {
+    "repository": "https://github.com/arcsin1/oh-my-ppt",
+    "reviewed_commit": "b937ae5",
+    "license": "Apache-2.0",
+    "reviewed_at": "2026-10-25"
+  },
+  "upstream_entrypoint": "resources/skills",
+  "local_entrypoint": "references/oh-my-ppt/README.md",
+  "execution_provider": "ppt-master",
+  "adopted_modules": [
+    {
+      "upstream_skill": "oh-my-ppt-source-reading",
+      "adapter": "references/oh-my-ppt/source-reading.md",
+      "capability": "source-grounded fact extraction and evidence boundaries"
+    },
+    {
+      "upstream_skill": "oh-my-ppt-layout",
+      "adapter": "references/oh-my-ppt/layout.md",
+      "capability": "page thesis, reading path, layout pattern and collision budget"
+    },
+    {
+      "upstream_skill": "oh-my-ppt-chart",
+      "adapter": "references/oh-my-ppt/chart.md",
+      "capability": "chart semantics, frame budget and editable export boundary"
+    },
+    {
+      "upstream_skill": "oh-my-ppt-data-anim",
+      "adapter": "references/oh-my-ppt/data-animation.md",
+      "capability": "declarative HTML animation and PPTX downgrade boundary"
+    },
+    {
+      "upstream_skill": "format-layout-skills",
+      "adapter": "references/oh-my-ppt/format-catalog.md",
+      "capability": "canvas-specific layout selection"
+    }
+  ],
+  "rejected": [
+    "vendoring the Electron application source",
+    "vendoring node_modules or build output",
+    "treating the HTML workbench as a native PPTX exporter",
+    "copying upstream templates, fonts, images, models or private assets"
+  ],
+  "runtime_boundary": "The adapter contributes guidance and provider status. It does not claim that Oh My PPT is installed or that a provider-backed export ran unless the runtime is independently discovered and executed."
+}

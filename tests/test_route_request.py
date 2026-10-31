@@ -89,6 +89,31 @@ class RouteRequestTests(unittest.TestCase):
         self.assertEqual(choose_route("用 open-slide 做一张流程图")["route"], "html-first-iterate")
         self.assertEqual(choose_route("用 ian-handdrawn-ppt 做一张流程图")["route"], "image-first-visual")
 
+    def test_oh_my_ppt_is_an_advisory_collaborator(self):
+        result = choose_route("Use oh-my-ppt to read the source and plan a 16:9 editable PPTX")
+        self.assertEqual(result["route"], "native-create")
+        self.assertIn("oh-my-ppt", result["collaborator_candidates"])
+        self.assertTrue(result["provider_status"]["oh-my-ppt"]["available"])
+        self.assertEqual(
+            result["provider_status"]["oh-my-ppt"]["execution_boundary"],
+            "guidance-only; use a separate provider for generation/export",
+        )
+
+    def test_openpencil_is_vector_authoring_with_native_fallback(self):
+        result = choose_route("用 OpenPencil 做一个高密度单页逻辑图，保留 .op 源文件并输出可编辑 PPTX")
+        self.assertEqual(result["route"], "native-create")
+        self.assertEqual(result["primary_candidates"][0], "openpencil-design")
+        self.assertIn("ppt-master", result["collaborator_candidates"])
+        self.assertEqual(result["provider_status"]["openpencil-design"]["runtime_probe"], "op --version")
+        self.assertIn("native PPTX", result["provider_status"]["openpencil-design"]["output_contract"])
+
+    def test_recommended_onepage_style_can_use_openpencil(self):
+        result = choose_route("把这篇网页文章做成一页PPT，你来定风格")
+        self.assertEqual(result["route"], "native-create")
+        self.assertEqual(result["style"]["id"], "design-reference-native")
+        self.assertEqual(result["primary_candidates"][0], "openpencil-design")
+        self.assertIn("ppt-master", result["collaborator_candidates"])
+
     def test_fixture_shape(self):
         cases = json.loads((ROOT / "evals" / "trigger_cases.json").read_text(encoding="utf-8"))
         self.assertGreaterEqual(len(cases["should_trigger"]), 8)

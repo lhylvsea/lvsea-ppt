@@ -28,6 +28,8 @@ def main() -> int:
         "html_presenter": "html-presenter",
         "visual_asset": "visual-asset",
         "motion_html": "motion-html",
+        "oh_my_ppt_advisory": "native-create",
+        "openpencil_native": "native-create",
     }
     failures: list[str] = []
     checked = 0

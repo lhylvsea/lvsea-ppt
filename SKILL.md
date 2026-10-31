@@ -1,9 +1,9 @@
 ---
 name: lvsea-ppt
-description: "中文优先的 PPT 总调度 Skill：根据内容来源、受众、编辑性、交付格式和视觉风险，在原生可编辑 PPTX、SVG/HTML 到 PPTX、浏览器 HTML PPT、图片型 PPT、手绘技术页、Bento 单页、动画演示和配图资产路线之间选择合适的执行器；网页/URL 默认只作为来源材料，不自动路由 Bento；一页 PPT 未指定版式时先给出推荐风格与可选路线。Use when the user asks to 做PPT、制作演示文稿、生成可编辑PPTX、网页内容转PPT、图片转PPTX、HTML转PPTX、SVG转PPTX、先做HTML再导出PPTX、做图片版PPT、Bento单页、PPT配图、流程图、行程图、路线图、架构图、关系图、示意图或统一派发多个PPT Skill。"
+description: "中文优先的 PPT 总调度 Skill：根据内容来源、受众、编辑性、交付格式和视觉风险，在原生可编辑 PPTX、OpenPencil 矢量构图、SVG/HTML 到 PPTX、浏览器 HTML PPT、图片型 PPT、手绘技术页、Bento 单页、动画演示和配图资产路线之间选择合适的执行器；网页/URL 默认只作为来源材料，不自动路由 Bento；一页 PPT 未指定版式时先给出推荐风格与可选路线。Use when the user asks to 做PPT、制作演示文稿、生成可编辑PPTX、网页内容转PPT、图片转PPTX、HTML转PPTX、SVG转PPTX、先做HTML再导出PPTX、用OpenPencil做高密度单页、做图片版PPT、Bento单页、PPT配图、流程图、行程图、路线图、架构图、关系图、示意图或统一派发多个PPT Skill。"
 metadata:
   author: "海洋哥 / lhylvsea"
-  version: "0.1.3"
+  version: "0.3.0"
   archetype: "vertical-presentation-router"
 ---
 
@@ -47,7 +47,7 @@ metadata:
 | 路由 | 典型请求 | 首选执行器 | 主要交付 |
 | --- | --- | --- | --- |
 | `clarification-required` | 图/流程图/行程图等描述宽泛，未说明用途或表现方式 | 不选 provider，先向用户列出选项 | 语义问题、风格选项、推荐路线、继续执行提示 |
-| `native-create` | 从材料或主题生成严肃、可编辑 PPTX | `$ppt-master`；高风险时 `$cyber-ppt` | PPTX、项目源、SVG/预览、QA |
+| `native-create` | 从材料或主题生成严肃、可编辑 PPTX；高密度单页明确指定 OpenPencil 时先做矢量构图 | `$openpencil-skill:openpencil-design` + `$ppt-master`；默认 `$ppt-master` | `.op` 源、PPTX、项目源、SVG/预览、QA |
 | `native-template-fill` | 套用现有 PPTX/公司模板、保持排版只换内容 | `$ppt-master` Fill Native；`$GordenPPTSkill` | 新 PPTX、填充计划、回读与渲染 |
 | `native-enhance` | 保留现有 PPTX 页面，增加备注、动画、旁白或局部增强 | `$ppt-master` Enhance Native | 新 PPTX、变更清单、回归预览 |
 | `evidence-consulting` | SCR、战略、生产、安全、经营分析、数据密集 | `$cyber-ppt`；`$ppt-master` | 证据台账、故事线、可编辑 PPTX、严格 QA |
@@ -76,7 +76,7 @@ metadata:
 
 | 风格 | 适用内容 | 路线 |
 | --- | --- | --- |
-| `design-reference-native` 模板构图参考版（推荐） | 正式汇报、政策、制造、安全、经营和一般文章 | `native-create`；`ppt-master` / `qiaomu-ppt` |
+| `design-reference-native` 模板构图参考版（推荐） | 正式汇报、政策、制造、安全、经营和一般文章；一页高密度视觉可先用 OpenPencil | `native-create`；`openpencil-design` / `ppt-master` / `qiaomu-ppt` |
 | `editorial-photo` 图文叙事版 | 新闻、人物、现场和需要保留原文照片的材料 | `native-create`；原生图片与文字混排 |
 | `timeline-policy` 时间轴演进版 | 年份、阶段、历程、政策演进和行动路径 | `native-create`；时间轴/阶段带为主骨架 |
 | `bento-info` Bento 信息卡片版 | 明确要求 Bento、信息卡片或 HTML 单页 | `bento-onepage`；`bentohttp-ppt` / `qiaomu-bento-ppt` |
@@ -98,6 +98,14 @@ metadata:
 用户可回复“中文技术解释图 + 可编辑PPTX”或“手绘式 + 图片型PPT”。出现手绘、技术解释、文字配图、可编辑 PPTX、HTML/动画、Bento、SCR/证据链或明确 provider 后不再重复提问。默认推荐 `technical-native`，便于保留事实、关系和后续编辑能力。
 
 ## 4. 关键混合路线
+
+### OpenPencil 矢量构图协作层
+
+当用户明确点名 `OpenPencil`、`openpencil-design` 或要求“高密度单页 + 矢量构图/保留 `.op` 源”时，选择 `openpencil-design` 做主构图；需要 PPTX 时保留 `ppt-master` 作为协作或降级出口。普通多页 PPT 仍默认走 `ppt-master`。
+
+保留 PenNode、`design`/`design:refine` 和 `.op` 源；不复制上游 Electron、依赖、模板或私有资产，也不把 PNG 预览冒充原生可编辑 PPTX。每次任务必须实测 exporter，缺失时按 fallback 交付并记录。
+
+可直接调用：`用 $lvsea-ppt 调用 OpenPencil，把这篇材料做成高密度 16:9 单页，保留 .op 源文件并输出可编辑 PPTX。`
 
 ### HTML 先行，再视觉终版
 
@@ -152,12 +160,31 @@ metadata:
   - 首轮应先列出“中文技术解释图 / 手绘式 / 文字配图 / 原生可编辑矢量图 / HTML 动画 / Bento / 咨询证据链”等选项，不应直接猜风格。
 - `用 $lvsea-ppt 做一张手绘式中文技术流程图，输出图片型 PPTX，后续再考虑可编辑重建。`
 
+## 9. Oh My PPT 协作层
+
+当用户明确点名 `oh-my-ppt`、`Oh My PPT`，或要求“来源阅读 + 版式预算 + 图表/动画规则”时，路由器将其作为协作顾问接入：
+
+- 来源阅读：只读取用户明确提供的 URL、文件或片段，保留事实、数字、日期、名称和引用位置，不用摘要替代原文证据。
+- 版式设计：先确定页面主旨、阅读路径、信息密度、画布比例和高度/宽度预算，再选择总结、数据、对比、概念、流程或时间线结构。
+- 图表与动画：图表必须有真实标签、单位、数值和固定容器；`data-anim` 只作为 HTML/演示层的声明式动画规则，不把它误报为原生 PPTX 动画。
+- 执行边界：`oh-my-ppt` 在本 Skill 中只提供方法适配和质量提醒；原生 PPTX 生成、SVG 导入、回读和渲染仍交给已发现的执行器，默认优先 `ppt-master`。
+
+可直接调用：
+
+1. `用 oh-my-ppt 阅读这篇文章，提炼事实并规划 16:9 可编辑 PPTX。`
+2. `用 oh-my-ppt 检查这张数据图的标签、单位和版式预算，再交给 ppt-master 导出。`
+3. `用 oh-my-ppt 规划 HTML 动画演示，但不要把 HTML 预览当成原生 PPTX。`
+4. `用 oh-my-ppt 评估 4:3、1:1、3:4 和 9:16 版式，并给出可验证的交付边界。`
+
+该适配不打包上游 Electron 源码、`node_modules`、构建产物、模板、字体、图片或私有资产；许可证和审查提交记录见 [`references/oh-my-ppt/`](references/oh-my-ppt/) 与 [`references/license-boundaries.md`](references/license-boundaries.md)。
+
 ## 8. 注意事项、限制与能力边界
 
 - URL、文章、公众号和网页不是版式名称；来源形态不会自动触发 Bento。
 - `PPT-Design/DesignPPT.md` 是视觉上位准则，参考模板用于提取构图能力；模板参考、模板填充和 Bento 信息卡片是三种不同契约。
 - 本 Skill 是路由与质量总线，不替代每个专业执行器，也不会凭空安装上游工具、创建 MCP 会话、生成外部凭据或保证图片模型可用。
 - 上游 Skill 的许可证、模板授权、专有导出器、非商业限制和第三方素材要求继续有效；只抽取方法、路由和质量规则，不把上游源码、模板、图片、商标或私人资料打包进本仓库。
+- OpenPencil 当前作为“矢量构图优先”的可选 provider 接入；`.op`/PNG 实际可用不等于当前运行时一定具备 PPTX exporter，必须以本次探测和 fallback 记录为准。
 - “HTML 可编辑”不等于“PPTX 原生可编辑”；“PPTX 文件存在”不等于“能打开、可回读或视觉通过”。
 - 复杂视觉越接近原图，通常越依赖图片组件；编辑性越高，通常越需要接受局部视觉差异。每次交付要把这个取舍写清楚。
 - 静态触发评测、路由器、结构检查和本地报告不能证明所有 provider 已实跑；未调用的执行器必须标记为未调用。

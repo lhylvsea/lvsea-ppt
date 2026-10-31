@@ -1,0 +1,28 @@
+interface:
+  display_name: "Lvsea PPT Boss"
+  short_description: "Route and validate Chinese-first editable presentations with optional OpenPencil vector authoring"
+  default_prompt: "Use $lvsea-ppt as the single presentation routing authority. Identify source, audience, target format, editability, and iteration needs; choose one primary provider plus only necessary collaborators; use OpenPencil for explicit high-density vector authoring, preserve editable source files, and validate structure, rendering, visual quality, and actual provider status."
+
+compatibility:
+  canonical_format: "agent-skills"
+  adapter_targets:
+    - "openai"
+    - "claude"
+    - "generic"
+    - "vscode"
+  activation:
+    explicit: "$lvsea-ppt"
+    implicit: true
+  execution:
+    router: "scripts/route_request.py"
+    route_validation: "scripts/validate_route.py"
+    provider_discovery: "LVSEA_SKILLS_ROOTS, CODEX_HOME/skills, USERPROFILE/.codex/skills, USERPROFILE/.agents/skills"
+  trust:
+    unreviewed_remote_execution: false
+    upstream_adoption: "semantic adaptation only; do not vendor upstream source, templates, or private assets"
+  permissions:
+    network: "read-only source retrieval by default"
+    file_write: "requested presentation artifacts, reports, and local Skill maintenance"
+    secrets: "never read into public artifacts"
+  degradation:
+    openpencil_pptx: "probe the actual exporter; if unavailable, keep .op/PNG and use a declared native PPTX fallback such as ppt-master"

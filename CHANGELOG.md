@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.3.0 - 2026-10-31
+
+- Added `openpencil-design` as an explicit and high-density one-page vector-authoring provider.
+- Kept `.op` as the OpenPencil design source and routed native PPTX delivery through a verified exporter or declared `ppt-master` fallback.
+- Added OpenPencil provider metadata, source/output and QA boundaries, trigger coverage, interface metadata, and local integration evidence.
+- Did not vendor OpenPencil Electron source, dependencies, templates, or private assets.
+
+## 0.2.0 - 2026-10-25
+
+- Integrated Oh My PPT as a semantic advisory layer for source reading, layout budgeting, charts, declarative animation boundaries and multi-ratio page checks.
+- Kept `ppt-master` and other discovered providers responsible for native PPTX generation and export; no upstream Electron source or runtime dependencies were vendored.
+- Added router discovery, trigger coverage, integration metadata, license attribution and a local integration validator.
+
 ## 0.1.3 - 2026-10-02
 
 - Changed URL/article routing so a web link is treated as source material, not an implicit Bento style.

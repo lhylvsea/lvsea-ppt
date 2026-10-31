@@ -1,17 +1,17 @@
 {
   "schema_version": "3.0.0-lvsea",
-  "generated_at": "2026-09-30",
+  "generated_at": "2026-10-31",
   "package": {
     "name": "lvsea-ppt",
-    "version": "0.1.2",
+    "version": "0.3.0",
     "owner": "海洋哥 / lhylvsea",
     "maturity_tier": "governed",
     "lifecycle_stage": "library",
     "upstream_inspiration": null
   },
   "intent": {
-    "description": "中文优先的终极 PPT 总调度 Skill：根据内容来源、受众、编辑性、交付格式和视觉风险，在原生可编辑 PPTX、SVG/HTML 到 PPTX、浏览器 HTML PPT、图片型 PPT、手绘技术页、Bento 单页、动画演示和配图资产路线之间选择最合适的专业执行器，保留事实与可继续编辑源文件，并完成结构、渲染、视觉和交互验收。Use when the user asks to 做PPT、制作演示文稿、生成可编辑PPTX、图片转PPTX、HTML转PPTX、SVG转PPTX、先做HTML再导出PPTX、做图片版PPT、网页PPT、Bento单页、PPT配图、流程图、行程图、路线图、架构图、关系图、示意图或统一派发多个PPT Skill。",
-    "job_to_be_done": "将多个 PPT、HTML、图片、SVG、动画和模板工作流统一派发到最合适的执行器，并以事实、编辑性、渲染和视觉质量门完成交付。",
+    "description": "中文优先的 PPT 总调度 Skill：根据内容来源、受众、编辑性、交付格式和视觉风险，在原生可编辑 PPTX、OpenPencil 矢量构图、SVG/HTML 到 PPTX、浏览器 HTML PPT、图片型 PPT、手绘技术页、Bento 单页、动画演示和配图资产路线之间选择合适的执行器；网页/URL 默认只作为来源材料，不自动路由 Bento；一页 PPT 未指定版式时先给出推荐风格与可选路线。Use when the user asks to 做PPT、制作演示文稿、生成可编辑PPTX、网页内容转PPT、图片转PPTX、HTML转PPTX、SVG转PPTX、先做HTML再导出PPTX、用OpenPencil做高密度单页、做图片版PPT、Bento单页、PPT配图、流程图、行程图、路线图、架构图、关系图、示意图或统一派发多个PPT Skill。",
+    "job_to_be_done": "将多个 PPT、HTML、图片、SVG、动画、模板和 OpenPencil 矢量构图工作流统一派发到最合适的执行器，并以事实、编辑性、渲染和视觉质量门完成交付。",
     "target_users": [
       "海洋哥及其本地 Codex 工作流",
       "制造企业管理者",
@@ -44,7 +44,8 @@
       "one-off summary",
       "translation only",
       "unverified provider claims",
-      "bundling upstream proprietary templates or private assets"
+      "bundling upstream proprietary templates or private assets",
+      "calling PNG or .op preview fully editable native PPTX"
     ]
   },
   "triggers": {
@@ -58,13 +59,16 @@
       "把战略报告按SCR逻辑做成有证据链的咨询风PPTX",
       "做一个带演讲者视图和讲稿备注的Swiss风网页PPT",
       "给PPT封面和章节页生成留安全区的配图提示词",
-      "做一个动画HTML流程演示，后面用于录屏"
+      "做一个动画HTML流程演示，后面用于录屏",
+      "Use oh-my-ppt to verify source facts and 16:9 layout before producing an editable PPTX",
+      "用 OpenPencil 做一个高密度单页逻辑图，保留 .op 源文件并输出可编辑 PPTX"
     ],
     "should_not_trigger": [
       "只解释一下PPT和PPTX的区别，不要创建文件",
       "把这段PPT说明翻译成英文，不要执行工具",
       "只给我三个PPT主题方向，不要生成计划或文件",
-      "只查看这张幻灯片截图，不要修改也不要转换"
+      "只查看这张幻灯片截图，不要修改也不要转换",
+      "只查看 OpenPencil Skill 文档，不要制作PPT"
     ],
     "near_neighbor": [
       "帮我开发一个复杂的React白板编辑器",
@@ -86,6 +90,16 @@
   "resources": {
     "references": [
       "references/license-boundaries.md",
+      "references/oh-my-ppt/chart.md",
+      "references/oh-my-ppt/data-animation.md",
+      "references/oh-my-ppt/format-catalog.md",
+      "references/oh-my-ppt/integration.json",
+      "references/oh-my-ppt/layout.md",
+      "references/oh-my-ppt/LICENSE",
+      "references/oh-my-ppt/NOTICE",
+      "references/oh-my-ppt/README.md",
+      "references/oh-my-ppt/source-reading.md",
+      "references/openpencil.md",
       "references/provider-matrix.md",
       "references/qa-contract.md",
       "references/route-playbook.md",
@@ -93,6 +107,7 @@
     ],
     "scripts": [
       "scripts/route_request.py",
+      "scripts/validate_oh_my_ppt_integration.py",
       "scripts/validate_route.py"
     ],
     "evals": [
@@ -101,6 +116,7 @@
     "reports": [
       "reports/context-budget.json",
       "reports/creation-handoff.md",
+      "reports/openpencil-integration.md",
       "reports/output-evidence.json",
       "reports/output-quality-scorecard.md",
       "reports/prior-art-research.md",
@@ -126,17 +142,38 @@
     "maturity": "governed",
     "lifecycle_stage": "library",
     "review_cadence": "quarterly",
-    "review_due": "2026-12-30",
+    "review_due": "2027-01-31",
     "rollback_boundary": "feature branch and immutable semver release; local sync is recoverable"
   },
   "portability": {
     "canonical_format": "agent-skills",
-    "adapter_targets": [],
-    "activation": {},
-    "execution": {},
-    "trust": {},
-    "permissions": {},
-    "degradation": {}
+    "adapter_targets": [
+      "openai",
+      "claude",
+      "generic",
+      "vscode"
+    ],
+    "activation": {
+      "explicit": "$lvsea-ppt",
+      "implicit": true
+    },
+    "execution": {
+      "router": "scripts/route_request.py",
+      "route_validation": "scripts/validate_route.py",
+      "provider_discovery": "LVSEA_SKILLS_ROOTS, CODEX_HOME/skills, USERPROFILE/.codex/skills, USERPROFILE/.agents/skills"
+    },
+    "trust": {
+      "unreviewed_remote_execution": false,
+      "upstream_adoption": "semantic adaptation only; do not vendor upstream source, templates, or private assets"
+    },
+    "permissions": {
+      "network": "read-only source retrieval by default",
+      "file_write": "requested presentation artifacts, reports, and local Skill maintenance",
+      "secrets": "never read into public artifacts"
+    },
+    "degradation": {
+      "openpencil_pptx": "probe the actual exporter; if unavailable, keep .op/PNG and use a declared native PPTX fallback such as ppt-master"
+    }
   },
   "evidence_boundary": {
     "local_validation_is_evidence": true,

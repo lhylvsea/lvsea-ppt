@@ -8,20 +8,20 @@
   ],
   "missing_description_concepts": [],
   "summary": {
-    "total": 19,
-    "passed": 19,
+    "total": 22,
+    "passed": 22,
     "false_positive": 0,
     "false_negative": 0,
     "pass_rate": 1.0
   },
   "bucket_summary": {
     "should_trigger": {
-      "total": 10,
-      "passed": 10
+      "total": 12,
+      "passed": 12
     },
     "should_not_trigger": {
-      "total": 4,
-      "passed": 4
+      "total": 5,
+      "passed": 5
     },
     "near_neighbor": {
       "total": 3,
@@ -163,6 +163,33 @@
           "source_material"
         ],
         "negative_pattern": null
+      },
+      {
+        "prompt": "Use oh-my-ppt to verify source facts and 16:9 layout before producing an editable PPTX",
+        "family": "oh_my_ppt_advisory",
+        "expected_trigger": true,
+        "predicted_trigger": true,
+        "passed": true,
+        "score": 0.667,
+        "matched_concepts": [
+          "skill",
+          "source_material"
+        ],
+        "negative_pattern": null
+      },
+      {
+        "prompt": "用 OpenPencil 做一个高密度单页逻辑图，保留 .op 源文件并输出可编辑 PPTX",
+        "family": "openpencil_native",
+        "expected_trigger": true,
+        "predicted_trigger": true,
+        "passed": true,
+        "score": 1.0,
+        "matched_concepts": [
+          "authoring_action",
+          "skill",
+          "source_material"
+        ],
+        "negative_pattern": null
       }
     ],
     "should_not_trigger": [
@@ -209,6 +236,19 @@
         "score": 0.333,
         "matched_concepts": [
           "source_material"
+        ],
+        "negative_pattern": "只查看"
+      },
+      {
+        "prompt": "只查看 OpenPencil Skill 文档，不要制作PPT",
+        "family": "openpencil_read_only",
+        "expected_trigger": false,
+        "predicted_trigger": false,
+        "passed": true,
+        "score": 0.667,
+        "matched_concepts": [
+          "authoring_action",
+          "skill"
         ],
         "negative_pattern": "只查看"
       }

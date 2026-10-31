@@ -43,7 +43,7 @@ C:\Users\<用户名>\.codex\skills\lvsea-ppt
 | --- | --- | --- | --- |
 | 图/流程图描述不清 | `clarification-required` | 暂不选 provider | 先确认语义范围、表现风格和编辑边界 |
 | URL/文章做一页 PPT 但未指定版式 | `clarification-required` | 暂不选 provider | 推荐版式、四项风格选择、可恢复提示 |
-| 新建可编辑 PPTX | `native-create` | `ppt-master` / `cyber-ppt` | 内容证据、SVG/PPTX、逐页 QA |
+| 新建可编辑 PPTX；高密度单页明确要求矢量构图 | `native-create` | `openpencil-design` + `ppt-master`；默认 `ppt-master` | `.op` 源、内容证据、SVG/PPTX、逐页 QA |
 | 套公司模板 | `native-template-fill` | `ppt-master` Fill Native / `GordenPPTSkill` | 保留版式、填充计划、回读 |
 | 严肃经营/安全/战略汇报 | `evidence-consulting` | `cyber-ppt` | SCR、证据表、严格检查 |
 | HTML 先行持续修改 | `html-first-iterate` | `open-slide` / `PPT-as-code` / `dashiai-ppt` | HTML 源、浏览器迭代、可选导出 |
@@ -56,6 +56,12 @@ C:\Users\<用户名>\.codex\skills\lvsea-ppt
 
 完整路由规则见 [`references/route-playbook.md`](references/route-playbook.md)，执行器能力与许可证见 [`references/provider-matrix.md`](references/provider-matrix.md)。
 
+## OpenPencil 协作路线
+
+当请求明确包含 `OpenPencil`、`openpencil-design` 或“高密度单页 + 矢量构图”时，路由器会把 OpenPencil 作为主构图 provider，把 `.op` 作为设计源；需要 PPTX 时保留 `ppt-master` 作为原生导出或降级出口。普通多页 PPT 不会因为安装了 OpenPencil 就被强制改路由。
+
+本地实际运行前必须检查 `op --version`、设计/细化命令和导出能力。当前适配不复制上游 Electron、依赖、模板或私有资产，也不把 PNG 预览称为原生可编辑 PPTX。具体边界见 [`references/openpencil.md`](references/openpencil.md)。
+
 ## URL 来源不会自动变成 Bento
 
 URL、网页、公众号和文章链接首先是内容来源，不是版式信号。请求“把网页做成一页 PPT/可编辑 PPTX”时，路由器会在生成前暂停，推荐 `design-reference-native`“模板构图参考版”，并提供四项可选路线：
@@ -64,6 +70,8 @@ URL、网页、公众号和文章链接首先是内容来源，不是版式信�
 2. `editorial-photo` 图文叙事版：用原文真实照片、现场图或人物图做主视觉，配合引语与主题段落。
 3. `timeline-policy` 时间轴演进版：以年份、阶段、政策演进或行动路径为主骨架。
 4. `bento-info` Bento 信息卡片版：只有用户明确选择 Bento、信息卡片或卡片矩阵时才启用。
+
+当你明确说“用 OpenPencil”时，会跳过这层版式选择，直接进入 OpenPencil 矢量构图路线；若要求 PPTX，仍需执行原生导出能力探测和 `ppt-master` fallback。
 
 “参考模板”与“套用模板”是两种不同请求：前者走 `native-create`，后者只有在明确“套用/填充/保留原版式/只改文字”时才走 `native-template-fill`。用户回复“你来定/直接做”时，路由器采用推荐风格并记录假设。
 
@@ -81,7 +89,7 @@ URL、网页、公众号和文章链接首先是内容来源，不是版式信�
 | 一页 Bento 信息图 | 文章、URL、公众号或管理摘要 | `bentohttp-ppt` / `qiaomu-bento-ppt` |
 | 咨询/证据链图 | SCR、战略、经营、安全、制造分析 | `cyber-ppt` / `ppt-master` |
 
-如果用户明确说“你来定/直接做”，默认采用“中文技术解释图 + 原生可编辑 PPTX”，并在交付中记录这一假设。
+如果用户明确说“你来定/直接做”，默认采用“中文技术解释图 + 原生可编辑 PPTX”；对一页高密度构图参考版，当前本机优先使用 OpenPencil 做设计源，并在交付中记录这一假设。
 
 ## 四个真实应用场景
 
@@ -126,6 +134,30 @@ python -m unittest discover -s tests -p "test*.py"
 ```
 
 Skill 包级验证、IR、上下文预算和发布门禁由 `lvsea-zao-skill` 的工具执行。详见 [`reports/creation-handoff.md`](reports/creation-handoff.md)。
+
+## Oh My PPT 集成
+
+`oh-my-ppt` 已作为语义适配层整合，不是上游 Electron 应用的源码镜像。当前固定审查提交为 `b937ae5`，许可证为 Apache-2.0；适配内容包括来源阅读、版式预算、图表约束、声明式动画边界和 16:9/4:3/1:1/3:4/9:16 画布检查。
+
+直接调用示例：
+
+1. `用 oh-my-ppt 阅读这篇文章并规划 16:9 可编辑 PPTX。`
+2. `用 oh-my-ppt 检查图表的真实标签、单位和数值，再交给 ppt-master 生成。`
+3. `用 oh-my-ppt 规划 HTML 动画演示，同时保留 PPTX 导出的能力边界。`
+4. `用 oh-my-ppt 评估这页内容适合哪种画布比例，并给出交付检查项。`
+
+路由器会把 `oh-my-ppt` 标记为 advisory collaborator；它不替代原生 PPTX 执行器，也不表示上游运行时已经安装或已完成一次真实导出。集成资料、许可证和回滚边界见 [`references/oh-my-ppt/`](references/oh-my-ppt/)。
+
+## OpenPencil 集成
+
+`openpencil-design` 已作为高密度单页的矢量构图 provider 接入。保留 `.op` 设计源和 PNG/SVG 预览；PPTX 只有在本次运行确认 exporter 存在时才由 OpenPencil 直接导出，否则由 `ppt-master` 或其他声明过的原生 fallback 完成。实测证据、采用边界和当前缺口见 [`reports/openpencil-integration.md`](reports/openpencil-integration.md)。
+
+直接调用示例：
+
+1. `用 $lvsea-ppt 调用 OpenPencil，把这篇材料做成高密度 16:9 单页，保留 .op 源文件并输出可编辑 PPTX。`
+2. `用 $lvsea-ppt 和 openpencil-design 做一张原生矢量逻辑图，复杂照片保留为图片组件。`
+3. `用 $lvsea-ppt 先用 OpenPencil 细化单页视觉，再用 ppt-master 完成 PPTX 导出和回读。`
+4. `只用 OpenPencil 交付 .op + PNG 预览，不要声称有 PPTX 原生编辑能力。`
 
 ## 许可证
 

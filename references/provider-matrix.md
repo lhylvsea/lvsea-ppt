@@ -25,6 +25,9 @@
 | [dashi-ppt-skill](https://github.com/chuspeeism/dashi-ppt-skill) | `7cb2334` | 用户给出的 `dashiai-ppt-skill` 已重定向到此仓库 | `html-first-iterate` | 避免重复 provider |
 | `axi-front-design-skill` | 2026-08-19 | 无可核验优势 | 不进入路由 | 用户 URL 当前返回 404，保持“不可用”记录 |
 
+| [Oh My PPT](https://github.com/arcsin1/oh-my-ppt) | `b937ae5` | 来源阅读、版式预算、Chart.js 图表约束、`data-anim` 动画边界和多画布比例方法 | `native-create`, `structured-import`, `html-first-iterate`, `bento-onepage`, `motion-html` 的协作顾问 | Apache-2.0；仅语义适配，不把 Electron/HTML 工作台当作原生 PPTX 执行器；由 `ppt-master` 等已发现执行器负责生成和导出 |
+| [OpenPencil](https://github.com/ZSeven-W/openpencil) / [openpencil-skill](https://github.com/ZSeven-W/openpencil-skill) | 本机实测 `op 0.8.4` | PenNode/矢量节点构图、`design`/`design:refine`、`.op` 源文件和 PNG/SVG 预览 | `native-create` 的高密度单页条件分支，或用户明确指定的主 authoring provider | OpenPencil MIT；仅采用方法和调用边界，不复制上游运行时/模板/私有资产；当前无头服务的 `export-deck` 能力需逐次探测，PPTX 必须保留已验证 exporter 或 `ppt-master` fallback |
+
 ## Local adapters
 
-本机曾发现的可用入口包括 `ppt-master`、`dashiai-ppt`、`cyber-ppt`、`gaiduo-ppt`、`bentohttp-ppt`、`slide-maker`、`GordenPPTSkill`、`GordenImage2PPTX`、`GordenSuperPPTSkill`、`ian-handdrawn-ppt`、`PPT-as-code`、`ppt-design-prompt`、`guizang-ppt-skill` 和 `bggg-creator-image2ppt`。运行时必须重新探测，不能只凭这份快照宣称已安装。
+本机曾发现的可用入口包括 `ppt-master`、`openpencil-design`、`dashiai-ppt`、`cyber-ppt`、`gaiduo-ppt`、`bentohttp-ppt`、`slide-maker`、`GordenPPTSkill`、`GordenImage2PPTX`、`GordenSuperPPTSkill`、`ian-handdrawn-ppt`、`PPT-as-code`、`ppt-design-prompt`、`guizang-ppt-skill` 和 `bggg-creator-image2ppt`。运行时必须重新探测，不能只凭这份快照宣称已安装；`openpencil-design` 还必须单独探测 `op` CLI 和实际 exporter。

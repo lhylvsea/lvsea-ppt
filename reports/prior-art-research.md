@@ -45,3 +45,11 @@
 - `available locally`: a local Skill entry was found during this run.
 - `provider run`: requires a real task invocation; this package did not call every provider.
 - `missing evidence`: no provider-backed visual run or human blind comparison was performed for the synthesis itself.
+
+## Oh My PPT review (2026-10-25)
+
+- Source: [arcsin1/oh-my-ppt](https://github.com/arcsin1/oh-my-ppt), reviewed at commit `b937ae5`.
+- License: Apache-2.0, with the upstream `LICENSE` and `NOTICE` retained under `references/oh-my-ppt/`.
+- Source-backed capabilities adopted as method guidance: explicit source reading, layout/page budgeting, Chart.js chart constraints, declarative `data-anim` animation, and 16:9/4:3/1:1/3:4/9:16 format guidance.
+- Runtime boundary: the review did not execute the upstream Electron application, install its Node/pnpm dependencies, or prove native PPTX export. `ppt-master` remains the native execution provider in this package.
+- Excluded from adoption: upstream application source, `node_modules`, build output, templates, fonts, images, models, private assets and any unreviewed install hook.

@@ -11,8 +11,33 @@ from pathlib import Path
 from typing import Any
 
 
+ROUTER_ROOT = Path(__file__).resolve().parents[1]
+
+
 PROVIDERS: dict[str, dict[str, Any]] = {
     "ppt-master": {"skills": ["ppt-master"], "role": "native editable PPTX, SVG-first, template fill"},
+    "openpencil-design": {
+        "skills": ["openpencil-design"],
+        "role": "PenNode vector authoring for high-density one-page and diagram design; .op source",
+        "runtime_probe": "op --version",
+        "output_contract": "canonical .op plus PNG/SVG; native PPTX only through a verified exporter or declared fallback",
+        "execution_boundary": "authoring-first; probe PPTX export at runtime and keep ppt-master as the native fallback",
+    },
+    "oh-my-ppt": {
+        "skills": [
+            "oh-my-ppt-source-reading",
+            "oh-my-ppt-layout",
+            "oh-my-ppt-chart",
+            "oh-my-ppt-data-anim",
+            "red-layout-skill",
+            "square-1-1-layout-skill",
+            "standard-4-3-layout-skill",
+            "vertical-3-4-layout-skill",
+            "vertical-9-16-layout-skill",
+        ],
+        "role": "source-grounded layout, chart and export-safe animation guidance; advisory only",
+        "integrated_reference": "references/oh-my-ppt",
+    },
     "cyber-ppt": {"skills": ["cyber-ppt", "CyberPPT"], "role": "evidence/SCR/strict QA"},
     "dashiai-ppt": {"skills": ["dashiai-ppt", "dashi-ppt", "dashi-ppt-skill"], "role": "browser-editable HTML and export"},
     "open-slide": {"skills": ["open-slide"], "role": "React HTML slide runtime and inspector"},
@@ -38,16 +63,16 @@ PROVIDERS: dict[str, dict[str, Any]] = {
 STYLE_REFERENCE_POLICY = (
     "生成前先读取本机 PPT-Design/DesignPPT.md，并按内容需要抽样逻辑图*.pptx 或公司PPT模板.pptx；"
     "参考模板只借鉴构图、色系、层级和组件，不等于直接套用原生模板。只有用户明确要求套用/填充/保留原版式时，"
-    "才进入 native-template-fill。"
+    "才进入 native-template-fill；高密度单页可在明确或推荐的构图参考路线上使用 OpenPencil 先做矢量构图。"
 )
 
 
 STYLE_PROFILES: dict[str, dict[str, Any]] = {
     "design-reference-native": {
         "label": "模板构图参考版（推荐）",
-        "description": "按 DesignPPT.md 与参考模板提取构图和色系，重新组织主视觉、逻辑链、时间线或重点区块；交付原生可编辑 PPTX，不机械复制卡片矩阵。",
+        "description": "按 DesignPPT.md 与参考模板提取构图和色系；高密度单页可先用 OpenPencil 做矢量构图，再通过已验证的 PPTX 出口交付，不机械复制卡片矩阵。",
         "route": "native-create",
-        "providers": ["ppt-master", "qiaomu-ppt", "cyber-ppt"],
+        "providers": ["openpencil-design", "ppt-master", "qiaomu-ppt", "cyber-ppt"],
         "recommendation": "适合正式汇报、政策文章、制造/安全/经营材料，能兼顾来源图片、事实结构和后续编辑。",
     },
     "editorial-photo": {
@@ -95,12 +120,23 @@ def _skill_roots(extra: list[str] | None = None) -> list[Path]:
 def _find_provider(provider: str, roots: list[Path]) -> dict[str, Any]:
     meta = PROVIDERS[provider]
     hits: list[str] = []
+    integrated_reference = meta.get("integrated_reference")
+    if integrated_reference:
+        reference_path = ROUTER_ROOT / str(integrated_reference)
+        if (reference_path / "README.md").is_file():
+            hits.append(str(reference_path))
     for root in roots:
         for name in meta["skills"]:
             candidate = root / name
             if (candidate / "SKILL.md").is_file():
                 hits.append(str(candidate))
-    return {"provider": provider, "available": bool(hits), "paths": hits, "role": meta["role"]}
+    result = {"provider": provider, "available": bool(hits), "paths": hits, "role": meta["role"]}
+    for key in ("runtime_probe", "output_contract", "execution_boundary"):
+        if key in meta:
+            result[key] = meta[key]
+    if integrated_reference:
+        result["execution_boundary"] = "guidance-only; use a separate provider for generation/export"
+    return result
 
 
 def _first_available(candidates: list[str], availability: dict[str, dict[str, Any]]) -> str | None:
@@ -116,8 +152,10 @@ def _has(text: str, *terms: str) -> bool:
 
 def _explicit_provider(text: str) -> str | None:
     pairs = [
+        ("openpencil-design", ["openpencil-design", "openpencil-skill", "openpencil", "op cli", "op.exe"]),
         ("GordenImage2PPTX", ["gordenimage2pptx", "gordenimage2ppt"]),
         ("GordenPPTSkill", ["gordenpptskill"]),
+        ("oh-my-ppt", ["oh-my-ppt", "oh my ppt", "ohmy-ppt", "ohmy ppt"]),
         ("cyber-ppt", ["cyberppt", "cyber-ppt"]),
         ("ppt-master", ["ppt-master"]),
         ("open-slide", ["open-slide"]),
@@ -493,6 +531,7 @@ def choose_route(request: str, extra_roots: list[str] | None = None) -> dict[str
     is_onepage_visual = has_onepage and (
         has_presentation_output or has_url_or_article or _has(text, "可视化", "信息图", "信息页")
     )
+    use_oh_my_ppt = explicit == "oh-my-ppt" or has_url_or_article or has_onepage or has_html or has_svg or has_motion
     has_style_signal = _has(
         text,
         "手绘",
@@ -618,7 +657,7 @@ def choose_route(request: str, extra_roots: list[str] | None = None) -> dict[str
         style_profile = STYLE_PROFILES[selected_style]
         route = style_profile["route"]
         candidates = style_profile["providers"]
-        collaborators = []
+        collaborators = ["ppt-master"] if selected_style == "design-reference-native" and (has_editable or has_presentation_output) else []
         reason = f"用户已选择“{style_profile['label']}”，按该构图契约执行；URL/文章仅作为来源材料。"
     elif selected_choice == "technical-native":
         route = "native-create"
@@ -655,6 +694,16 @@ def choose_route(request: str, extra_roots: list[str] | None = None) -> dict[str
         candidates = ["cyber-ppt", "ppt-master", "qiaomu-ppt"]
         collaborators = []
         reason = "用户已选择咨询/证据链图，先建立事实台账、故事线和严格质量门。"
+    elif explicit == "oh-my-ppt":
+        route = "structured-import" if has_html or has_svg else "native-create"
+        candidates = ["ppt-master", "qiaomu-ppt", "cyber-ppt"]
+        collaborators = ["oh-my-ppt"]
+        reason = "Explicit oh-my-ppt request: apply source-reading, layout, chart, and animation guidance, then use an available provider for PPTX or HTML export."
+    elif explicit == "openpencil-design":
+        route = "native-create"
+        candidates = ["openpencil-design", "ppt-master", "qiaomu-ppt", "cyber-ppt"]
+        collaborators = ["ppt-master"] if has_editable or has_presentation_output else []
+        reason = "用户明确指定 OpenPencil：先以 .op/矢量节点完成高密度构图与视觉细化；需要 PPTX 时交给已验证的原生出口，并保留 OpenPencil 源文件。"
     elif explicit in {"open-slide", "PPT-as-code", "dashiai-ppt", "html-ppt-skill", "gaiduo-ppt"} and not wants_hybrid:
         route = "html-first-iterate"
         candidates = [explicit, "open-slide", "PPT-as-code", "dashiai-ppt"]
@@ -740,11 +789,26 @@ def choose_route(request: str, extra_roots: list[str] | None = None) -> dict[str
         candidates = ["open-slide", "PPT-as-code", "dashiai-ppt", "gaiduo-ppt", "html-ppt-skill"]
         collaborators = []
         reason = "请求以 HTML/React/浏览器迭代为中心，先交付可运行网页源。"
+    elif is_onepage_visual and bypass_diagram_gate:
+        route = "native-create"
+        candidates = STYLE_PROFILES["design-reference-native"]["providers"]
+        collaborators = ["ppt-master"] if has_editable or has_presentation_output else []
+        reason = "用户要求直接完成一页 PPT，采用推荐的模板构图参考路线；高密度页面优先使用 OpenPencil 构图，PPTX 由已验证原生出口完成。"
     else:
         route = "native-create"
         candidates = ["ppt-master", "cyber-ppt", "qiaomu-ppt"]
         collaborators = []
         reason = "没有更强的格式信号，按海洋哥偏好默认走原生可编辑 PPTX；URL/文章只作为来源材料。"
+
+    if use_oh_my_ppt and route in {
+        "native-create",
+        "structured-import",
+        "html-first-iterate",
+        "hybrid-html-to-visual",
+        "bento-onepage",
+        "motion-html",
+    } and "oh-my-ppt" not in collaborators:
+        collaborators = [*collaborators, "oh-my-ppt"]
 
     chosen = _first_available(candidates, availability)
     collab_status = [_find_provider(name, roots) for name in collaborators]

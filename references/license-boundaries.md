@@ -12,6 +12,12 @@
 - `gaiduo-ppt` had no LICENSE file in the reviewed checkout; treat its content as “rights to confirm” rather than assume MIT.
 - MIT and Apache-2.0 upstream licenses permit method reference, but they do not grant rights to third-party brand marks, downloaded images, fonts, models or user materials.
 
+## Oh My PPT boundary
+
+- `arcsin1/oh-my-ppt` was reviewed at commit `b937ae5` under Apache-2.0; the exact upstream `LICENSE` and `NOTICE` are retained in `references/oh-my-ppt/` for attribution.
+- This package adapts documented methods only. It does not vendor the upstream Electron source, `node_modules`, build output, HTML templates, fonts, images, models or private assets.
+- The upstream Node/pnpm/Electron runtime is a separate installation concern. A discovered reference or static route result is not evidence that the upstream application ran or exported a native PPTX.
+
 ## Evidence rule
 
 Record URLs, reviewed commit and the precise capability claim in `reports/prior-art-research.md`. “README says it supports X” is not the same as “X ran successfully in this environment”.
